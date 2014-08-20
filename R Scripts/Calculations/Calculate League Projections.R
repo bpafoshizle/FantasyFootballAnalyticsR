@@ -15,7 +15,7 @@ library("psych")
 
 #Functions
 source(paste(getwd(),"/R Scripts/Functions/Functions.R", sep=""))
-source(paste(getwd(),"/R Scripts/Functions/League Settings.R", sep=""))
+source(paste(getwd(),"/R Scripts/Functions/League Settings_Merica.R", sep=""))
 
 #Import projections data
 filenames <- paste(getwd(),"/Data/", sourcesOfProjections, "-Projections.RData", sep="")
@@ -262,3 +262,4 @@ write.csv(projections, file=paste(getwd(),"/Data/LeagueProjections.csv", sep="")
 
 save(projections, file = paste(getwd(),"/Data/Historical Projections/LeagueProjections-2014.RData", sep=""))
 write.csv(projections, file=paste(getwd(),"/Data/Historical Projections/LeagueProjections-2014.csv", sep=""), row.names=FALSE)
+
