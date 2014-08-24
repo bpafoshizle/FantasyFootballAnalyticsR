@@ -12,11 +12,12 @@ library("stringr")
 library("XML")
 
 #Functions
+source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
 source(paste(getwd(),"/R Scripts/Functions/Functions.R", sep=""))
-source(paste(getwd(),"/R Scripts/Functions/League Settings.R", sep=""))
+source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=""))
 
 #Load data
-load(paste(getwd(),"/Data/VOR.RData", sep=""))
+load(paste(getwd(),"/Data/VOR_", league, ".RData", sep=""))
 
 ###############
 # Yahoo
@@ -243,12 +244,12 @@ row.names(projections) <- 1:dim(projections)[1]
 
 #Density Plot
 ggplot(projections, aes(x=inflatedCost)) + geom_density(fill="green", alpha=.3) + xlab("Player's Intrinsic Value (Cost)") + ggtitle("Density Plot of Players' Intrinsic Value") + theme(legend.title=element_blank())
-ggsave(paste(getwd(),"/Figures/Inflated Cost.jpg", sep=""), width=10, height=10)
+ggsave(paste(getwd(),"/Figures/Inflated Cost_",league, ".jpg", sep=""), width=10, height=10)
 dev.off()
 
 #Save file
-save(projections, file = paste(getwd(),"/Data/AvgCost.RData", sep=""))
-write.csv(projections, file=paste(getwd(),"/Data/AvgCost.csv", sep=""), row.names=FALSE)
+save(projections, file = paste(getwd(),"/Data/AvgCost_", league, ".RData", sep=""))
+write.csv(projections, file=paste(getwd(),"/Data/AvgCost_", league, ".csv", sep=""), row.names=FALSE)
 
-save(projections, file = paste(getwd(),"/Data/Historical Cost/AvgCost-2014.RData", sep=""))
-write.csv(projections, file=paste(getwd(),"/Data/Historical Cost/AvgCost-2014.csv", sep=""), row.names=FALSE)
+save(projections, file = paste(getwd(),"/Data/Historical Cost/AvgCost_", league, "-2014.RData", sep=""))
+write.csv(projections, file=paste(getwd(),"/Data/Historical Cost/AvgCost_", league, "-2014.csv", sep=""), row.names=FALSE)

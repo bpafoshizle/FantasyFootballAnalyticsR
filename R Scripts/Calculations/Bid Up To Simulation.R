@@ -13,11 +13,12 @@
 library("Rglpk")
 
 #Functions
+source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
 source(paste(getwd(),"/R Scripts/Functions/Functions.R", sep=""))
-source(paste(getwd(),"/R Scripts/Functions/League Settings.R", sep=""))
+source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=""))
 
 #Data
-load(paste(getwd(),"/Data/simulation.RData", sep=""))
+load(paste(getwd(),"/Data/simulation_", league, ".RData", sep=""))
 
 #Set iterations
 iterations <- 1000
@@ -82,9 +83,9 @@ projections <- projections[order(-projections$vor),] #projections$projections
 row.names(projections) <- 1:dim(projections)[1]
 
 #Save file
-save(projections, file = paste(getwd(),"/Data/BidUpToSimulation.RData", sep=""))
-write.csv(projections, file=paste(getwd(),"/Data/BidUpToSimulation.csv", sep=""), row.names=FALSE)
+save(projections, file = paste(getwd(),"/Data/BidUpToSimulation_", league, ".RData", sep=""))
+write.csv(projections, file=paste(getwd(),"/Data/BidUpToSimulation_", league, ".csv", sep=""), row.names=FALSE)
 
-save(projections, file = paste(getwd(),"/Data/Historical Files/BidUpToSimulation-2014.RData", sep=""))
-write.csv(projections, file=paste(getwd(),"/Data/Historical Files/BidUpToSimulation-2014.csv", sep=""), row.names=FALSE)
+save(projections, file = paste(getwd(),"/Data/Historical Files/BidUpToSimulation_", league, "-2014.RData", sep=""))
+write.csv(projections, file=paste(getwd(),"/Data/Historical Files/BidUpToSimulation_", league, "-2014.csv", sep=""), row.names=FALSE)
 

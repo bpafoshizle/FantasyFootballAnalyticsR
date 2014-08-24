@@ -8,11 +8,12 @@
 ###########################
 
 #Functions
+source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
 source(paste(getwd(),"/R Scripts/Functions/Functions.R", sep=""))
-source(paste(getwd(),"/R Scripts/Functions/League Settings.R", sep=""))
+source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=""))
 
 #Load data
-load(paste(getwd(),"/Data/Risk.RData", sep=""))
+load(paste(getwd(),"/Data/Risk_", league, ".RData", sep=""))
 
 #Calculate Value over Replacement
 qb <- projections[projections$pos=="QB",][order(projections[projections$pos=="QB",]$overallRank),]
@@ -61,30 +62,30 @@ dev.off()
 
 #Boxplot
 qplot(pos, vor, data=projections[which(projections$vor >= 0),], geom=c("boxplot", "jitter"), fill=pos, main="Value Over Replacement By Position", xlab="", ylab="Value Over Replacement")
-ggsave(paste(getwd(),"/Figures/VOR-Boxplot.jpg", sep=""), width=10, height=10)
+ggsave(paste(getwd(),"/Figures/VOR-Boxplot_",league, ".jpg", sep=""), width=10, height=10)
 dev.off()
 
 #Save file
-save(projections, file = paste(getwd(),"/Data/VOR.RData", sep=""))
-write.csv(projections, file=paste(getwd(),"/Data/VOR.csv", sep=""), row.names=FALSE)
+save(projections, file = paste(getwd(),"/Data/VOR_", league, ".RData", sep=""))
+write.csv(projections, file=paste(getwd(),"/Data/VOR_", league, ".csv", sep=""), row.names=FALSE)
 
-save(projections, file = paste(getwd(),"/Data/Historical Files/VOR-2014.RData", sep=""))
-write.csv(projections, file=paste(getwd(),"/Data/Historical Files/VOR-2014.csv", sep=""), row.names=FALSE)
+save(projections, file = paste(getwd(),"/Data/Historical Files/VOR_", league, "-2014.RData", sep=""))
+write.csv(projections, file=paste(getwd(),"/Data/Historical Files/VOR_", league, "-2014.csv", sep=""), row.names=FALSE)
 
 #Subset data
 draftData <- projections[row.names(na.omit(projections[,c("projections","vor","risk")])),c("name","pos","team","projections","vor","sdPick","sdPts","risk")] #projectedPtsLatent
 row.names(draftData) <- 1:dim(draftData)[1]
 
 options(digits=2)
-draftData
+#draftData
 
 #Example: Update with drafted (i.e., unavailable) players
-drafted <- c("Arian Foster","Ray Rice")
+#drafted <- c("Arian Foster","Ray Rice")
 
-draftData[!(draftData$name %in% drafted),]
+#draftData[!(draftData$name %in% drafted),]
 
 ###Draft Dashboard
-drafted <- c("")
+drafted <- c()
 
 #All players
 draftData[!(draftData$name %in% drafted),]

@@ -12,11 +12,12 @@
 library("Rglpk")
 
 #Functions
+source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
 source(paste(getwd(),"/R Scripts/Functions/Functions.R", sep=""))
-source(paste(getwd(),"/R Scripts/Functions/League Settings.R", sep=""))
+source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=""))
 
 #Load data
-load(paste(getwd(),"/Data/AvgCost.RData", sep=""))
+load(paste(getwd(),"/Data/AvgCost_", league, ".RData", sep=""))
 
 #Subset data
 optimizeData <- na.omit(projections[,c("name","player","pos","projections","risk","inflatedCost")])
@@ -49,8 +50,8 @@ projections$bidUpTo[is.na(projections$bidUpTo)] <- 1
 row.names(projections) <- 1:max(as.numeric(row.names(projections)))
 
 #Save file
-save(projections, file = paste(getwd(),"/Data/BidUpTo.RData", sep=""))
-write.csv(projections, file=paste(getwd(),"/Data/BidUpTo.csv", sep=""), row.names=FALSE)
+save(projections, file = paste(getwd(),"/Data/BidUpTo_", league, ".RData", sep=""))
+write.csv(projections, file=paste(getwd(),"/Data/BidUpTo_", league, ".csv", sep=""), row.names=FALSE)
 
-save(projections, file = paste(getwd(),"/Data/Historical Files/BidUpTo-2014.RData", sep=""))
-write.csv(projections, file=paste(getwd(),"/Data/Historical Files/BidUpTo-2014.csv", sep=""), row.names=FALSE)
+save(projections, file = paste(getwd(),"/Data/Historical Files/BidUpTo_", league, "-2014.RData", sep=""))
+write.csv(projections, file=paste(getwd(),"/Data/Historical Files/BidUpTo_", league, "-2014.csv", sep=""), row.names=FALSE)

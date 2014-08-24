@@ -7,19 +7,22 @@
 # To do:
 ###########################
 
+#Functions
+source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
+source(paste(getwd(),"/R Scripts/Functions/Functions.R", sep=""))
+source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=""))
+
 #Type of drafts to scrape
-num.teams <- 10           #Number of teams in your league
-rounds <- 15              #Number of rounds completed, should not change (15 standard num to complete draft for 10 teams)
-num.obs <- 10000          #Number of drafts to scrape and parse
-humans <- 10    		      #Number of human drafters, in my case I want all humans
+num.teams <- numTeams #Number of teams in your league
+rounds <- numRounds #Number of rounds completed, should not change (15 standard num to complete draft for 10 teams)
+num.obs <- 10000  #Number of drafts to scrape and parse
+humans <- numTeams #Number of human drafters, in my case I want all humans
 
 #Load libraries
 library("XML")
 library("ggplot2")
 
-#Functions
-source(paste(getwd(),"/R Scripts/Functions/Functions.R", sep=""))
-source(paste(getwd(),"/R Scripts/Functions/League Settings.R", sep=""))
+
 
 base.url <- "http://fantasyfootballcalculator.com/draft/"
 seed.url <- paste("http://fantasyfootballcalculator.com/completed_drafts.php?format=standard&teams=",num.teams,sep="")
@@ -149,13 +152,13 @@ value.plot <- ggplot(subset(drafts.stats, drafts.stats$mad >= ex.mad), aes(media
   scale_color_manual(values=c("red"="darkred")) +
   theme(legend.position="none")
 
-ggsave(paste(getwd(),"/Figures/Sleepers.jpg", sep=""), width=10, height=6, units="in")
+ggsave(paste(getwd(),"/Figures/Sleepers_", league, ".jpg", sep=""), width=10, height=6, units="in")
 value.plot
 dev.off()
 
 #Save file
-save(wisdomOfTheCrowd, file = paste(getwd(),"/Data/wisdomOfTheCrowd.RData", sep=""))
-write.csv(wisdomOfTheCrowd, file=paste(getwd(),"/Data/wisdomOfTheCrowd.csv", sep=""), row.names=FALSE)
+save(wisdomOfTheCrowd, file = paste(getwd(),"/Data/wisdomOfTheCrowd_", league, ".RData", sep=""))
+write.csv(wisdomOfTheCrowd, file=paste(getwd(),"/Data/wisdomOfTheCrowd_", league, ".csv", sep=""), row.names=FALSE)
 
-save(wisdomOfTheCrowd, file = paste(getwd(),"/Data/Historical Files/wisdomOfTheCrowd-2014.RData", sep=""))
-write.csv(wisdomOfTheCrowd, file=paste(getwd(),"/Data/Historical Files/wisdomOfTheCrowd-2014.csv", sep=""), row.names=FALSE)
+save(wisdomOfTheCrowd, file = paste(getwd(),"/Data/Historical Files/wisdomOfTheCrowd_", league, "-2014.RData", sep=""))
+write.csv(wisdomOfTheCrowd, file=paste(getwd(),"/Data/Historical Files/wisdomOfTheCrowd_", league, "-2014.csv", sep=""), row.names=FALSE)

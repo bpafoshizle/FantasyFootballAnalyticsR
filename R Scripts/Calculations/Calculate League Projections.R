@@ -9,13 +9,18 @@
 ###########################
 
 #Library
+library("plyr")
+library("stringr")
+library("ggplot2")
 library("reshape")
 library("MASS")
 library("psych")
 
+
 #Functions
+source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
 source(paste(getwd(),"/R Scripts/Functions/Functions.R", sep=""))
-source(paste(getwd(),"/R Scripts/Functions/League Settings_Merica.R", sep=""))
+source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=""))
 
 #Import projections data
 filenames <- paste(getwd(),"/Data/", sourcesOfProjections, "-Projections.RData", sep="")
@@ -53,7 +58,7 @@ wr[wr$lastName %in% wr$lastName[duplicated(wr$lastName)], c("player","team")]
 te[te$lastName %in% te$lastName[duplicated(te$lastName)], c("player","team")]
 
 #Remove duplicate cases
-projections[projections$name %in% projections$name[duplicated(projections$name)],]
+#projections[projections$name %in% projections$name[duplicated(projections$name)],]
 
 #Same name, different player
 
@@ -137,21 +142,21 @@ projections$twoPtsMedian <- apply(projections[,paste("twoPts", sourcesOfProjecti
 projections$fumblesMedian <- apply(projections[,paste("fumbles", sourcesOfProjectionsAbbreviation, sep="_")], 1, function(x) tryCatch(wilcox.test(x, conf.int=TRUE, na.action="na.exclude")$estimate, error=function(e) median(x, na.rm=TRUE)))
 
 #Check projections
-projections[,c("name",paste("passAtt", sourcesOfProjectionsAbbreviation, sep="_"), c("passAtt","passAttMedian"))]
-projections[,c("name",paste("passComp", sourcesOfProjectionsAbbreviation, sep="_"), c("passComp","passCompMedian"))]
-projections[,c("name",paste("passIncomp", sourcesOfProjectionsAbbreviation, sep="_"), c("passIncomp","passIncompMedian"))]
-projections[,c("name",paste("passYds", sourcesOfProjectionsAbbreviation, sep="_"), c("passYds","passYdsMedian"))]
-projections[,c("name",paste("passTds", sourcesOfProjectionsAbbreviation, sep="_"), c("passTds","passTdsMedian"))]
-projections[,c("name",paste("passInt", sourcesOfProjectionsAbbreviation, sep="_"), c("passInt","passIntMedian"))]
-projections[,c("name",paste("rushAtt", sourcesOfProjectionsAbbreviation, sep="_"), c("rushAtt","rushAttMedian"))]
-projections[,c("name",paste("rushYds", sourcesOfProjectionsAbbreviation, sep="_"), c("rushYds","rushYdsMedian"))]
-projections[,c("name",paste("rushTds", sourcesOfProjectionsAbbreviation, sep="_"), c("rushTds","rushTdsMedian"))]
-projections[,c("name",paste("rec", sourcesOfProjectionsAbbreviation, sep="_"), c("rec","recMedian"))]
-projections[,c("name",paste("recYds", sourcesOfProjectionsAbbreviation, sep="_"), c("recYds","recYdsMedian"))]
-projections[,c("name",paste("recTds", sourcesOfProjectionsAbbreviation, sep="_"), c("recTds","recTdsMedian"))]
-projections[,c("name",paste("returnTds", sourcesOfProjectionsAbbreviation, sep="_"), c("returnTds","returnTdsMedian"))]
-projections[,c("name",paste("twoPts", sourcesOfProjectionsAbbreviation, sep="_"), c("twoPts","twoPtsMedian"))]
-projections[,c("name",paste("fumbles", sourcesOfProjectionsAbbreviation, sep="_"), c("fumbles","fumblesMedian"))]
+# projections[,c("name",paste("passAtt", sourcesOfProjectionsAbbreviation, sep="_"), c("passAtt","passAttMedian"))]
+# projections[,c("name",paste("passComp", sourcesOfProjectionsAbbreviation, sep="_"), c("passComp","passCompMedian"))]
+# projections[,c("name",paste("passIncomp", sourcesOfProjectionsAbbreviation, sep="_"), c("passIncomp","passIncompMedian"))]
+# projections[,c("name",paste("passYds", sourcesOfProjectionsAbbreviation, sep="_"), c("passYds","passYdsMedian"))]
+# projections[,c("name",paste("passTds", sourcesOfProjectionsAbbreviation, sep="_"), c("passTds","passTdsMedian"))]
+# projections[,c("name",paste("passInt", sourcesOfProjectionsAbbreviation, sep="_"), c("passInt","passIntMedian"))]
+# projections[,c("name",paste("rushAtt", sourcesOfProjectionsAbbreviation, sep="_"), c("rushAtt","rushAttMedian"))]
+# projections[,c("name",paste("rushYds", sourcesOfProjectionsAbbreviation, sep="_"), c("rushYds","rushYdsMedian"))]
+# projections[,c("name",paste("rushTds", sourcesOfProjectionsAbbreviation, sep="_"), c("rushTds","rushTdsMedian"))]
+# projections[,c("name",paste("rec", sourcesOfProjectionsAbbreviation, sep="_"), c("rec","recMedian"))]
+# projections[,c("name",paste("recYds", sourcesOfProjectionsAbbreviation, sep="_"), c("recYds","recYdsMedian"))]
+# projections[,c("name",paste("recTds", sourcesOfProjectionsAbbreviation, sep="_"), c("recTds","recTdsMedian"))]
+# projections[,c("name",paste("returnTds", sourcesOfProjectionsAbbreviation, sep="_"), c("returnTds","returnTdsMedian"))]
+# projections[,c("name",paste("twoPts", sourcesOfProjectionsAbbreviation, sep="_"), c("twoPts","twoPtsMedian"))]
+# projections[,c("name",paste("fumbles", sourcesOfProjectionsAbbreviation, sep="_"), c("fumbles","fumblesMedian"))]
 
 #Calculate projected points for your league (average projections)
 projections$passAttPts <- projections$passAtt * passAttMultiplier
@@ -187,29 +192,29 @@ projections$twoPtsMedianPts <- projections$twoPtsMedian * twoPtsMultiplier
 projections$fumblesMedianPts <- projections$fumblesMedian * fumlMultiplier
 
 #Check projections
-projections[,c("name",paste("passAttPts", sourcesOfProjectionsAbbreviation, sep="_"), c("passAttPts","passAttMedianPts"))]
-projections[,c("name",paste("passCompPts", sourcesOfProjectionsAbbreviation, sep="_"), c("passCompPts","passCompMedianPts"))]
-projections[,c("name",paste("passIncompPts", sourcesOfProjectionsAbbreviation, sep="_"), c("passIncompPts","passIncompMedianPts"))]
-projections[,c("name",paste("passYdsPts", sourcesOfProjectionsAbbreviation, sep="_"), c("passYdsPts","passYdsMedianPts"))]
-projections[,c("name",paste("passTdsPts", sourcesOfProjectionsAbbreviation, sep="_"), c("passTdsPts","passTdsMedianPts"))]
-projections[,c("name",paste("passIntPts", sourcesOfProjectionsAbbreviation, sep="_"), c("passIntPts","passIntMedianPts"))]
-projections[,c("name",paste("rushAttPts", sourcesOfProjectionsAbbreviation, sep="_"), c("rushAttPts","rushAttMedianPts"))]
-projections[,c("name",paste("rushYdsPts", sourcesOfProjectionsAbbreviation, sep="_"), c("rushYdsPts","rushYdsMedianPts"))]
-projections[,c("name",paste("rushTdsPts", sourcesOfProjectionsAbbreviation, sep="_"), c("rushTdsPts","rushYdsMedianPts"))]
-projections[,c("name",paste("recPts", sourcesOfProjectionsAbbreviation, sep="_"), c("recPts","recMedianPts"))]
-projections[,c("name",paste("recYdsPts", sourcesOfProjectionsAbbreviation, sep="_"), c("recYdsPts","recYdsMedianPts"))]
-projections[,c("name",paste("recTdsPts", sourcesOfProjectionsAbbreviation, sep="_"), c("recTdsPts","recTdsMedianPts"))]
-projections[,c("name",paste("returnTdsPts", sourcesOfProjectionsAbbreviation, sep="_"), c("returnTdsPts","returnTdsMedianPts"))]
-projections[,c("name",paste("twoPtsPts", sourcesOfProjectionsAbbreviation, sep="_"), c("twoPtsPts","twoPtsMedianPts"))]
-projections[,c("name",paste("fumblesPts", sourcesOfProjectionsAbbreviation, sep="_"), c("fumblesPts","fumblesMedianPts"))]
-
+# projections[,c("name",paste("passAttPts", sourcesOfProjectionsAbbreviation, sep="_"), c("passAttPts","passAttMedianPts"))]
+# projections[,c("name",paste("passCompPts", sourcesOfProjectionsAbbreviation, sep="_"), c("passCompPts","passCompMedianPts"))]
+# projections[,c("name",paste("passIncompPts", sourcesOfProjectionsAbbreviation, sep="_"), c("passIncompPts","passIncompMedianPts"))]
+# projections[,c("name",paste("passYdsPts", sourcesOfProjectionsAbbreviation, sep="_"), c("passYdsPts","passYdsMedianPts"))]
+# projections[,c("name",paste("passTdsPts", sourcesOfProjectionsAbbreviation, sep="_"), c("passTdsPts","passTdsMedianPts"))]
+# projections[,c("name",paste("passIntPts", sourcesOfProjectionsAbbreviation, sep="_"), c("passIntPts","passIntMedianPts"))]
+# projections[,c("name",paste("rushAttPts", sourcesOfProjectionsAbbreviation, sep="_"), c("rushAttPts","rushAttMedianPts"))]
+# projections[,c("name",paste("rushYdsPts", sourcesOfProjectionsAbbreviation, sep="_"), c("rushYdsPts","rushYdsMedianPts"))]
+# projections[,c("name",paste("rushTdsPts", sourcesOfProjectionsAbbreviation, sep="_"), c("rushTdsPts","rushYdsMedianPts"))]
+# projections[,c("name",paste("recPts", sourcesOfProjectionsAbbreviation, sep="_"), c("recPts","recMedianPts"))]
+# projections[,c("name",paste("recYdsPts", sourcesOfProjectionsAbbreviation, sep="_"), c("recYdsPts","recYdsMedianPts"))]
+# projections[,c("name",paste("recTdsPts", sourcesOfProjectionsAbbreviation, sep="_"), c("recTdsPts","recTdsMedianPts"))]
+# projections[,c("name",paste("returnTdsPts", sourcesOfProjectionsAbbreviation, sep="_"), c("returnTdsPts","returnTdsMedianPts"))]
+# projections[,c("name",paste("twoPtsPts", sourcesOfProjectionsAbbreviation, sep="_"), c("twoPtsPts","twoPtsMedianPts"))]
+# projections[,c("name",paste("fumblesPts", sourcesOfProjectionsAbbreviation, sep="_"), c("fumblesPts","fumblesMedianPts"))]
+# 
 projections$projectedPtsMean <- mySum(projections[,c("passAttPts","passCompPts","passIncompPts","passYdsPts","passTdsPts","passIntPts","rushAttPts","rushYdsPts","rushTdsPts","recPts","recYdsPts","recTdsPts","returnTdsPts","twoPtsPts","fumblesPts")])
 projections$projectedPtsMedian <- mySum(projections[,c("passAttMedianPts","passCompMedianPts","passIncompMedianPts","passYdsMedianPts","passTdsMedianPts","passIntMedianPts","rushAttMedianPts","rushYdsMedianPts","rushTdsMedianPts","recMedianPts","recYdsMedianPts","recTdsMedianPts","returnTdsMedianPts","twoPtsMedianPts","fumblesMedianPts")])
 
 #Check projections
-projections[,c("name",paste("projectedPts", sourcesOfProjectionsAbbreviation, sep="_"), c("projectedPtsMean","projectedPtsMedian"))]
-projections[,c("name","projectedPtsMean","projectedPtsMedian")]
-
+# projections[,c("name",paste("projectedPts", sourcesOfProjectionsAbbreviation, sep="_"), c("projectedPtsMean","projectedPtsMedian"))]
+# projections[,c("name","projectedPtsMean","projectedPtsMedian")]
+# 
 projectionVars <- projections[,c(paste("projectedPts", sourcesOfProjectionsAbbreviation, sep="_"), c("projectedPtsMean","projectedPtsMedian"))]
 
 #Convert Zeros to NA
@@ -244,12 +249,12 @@ projections <- projections[,c("name","player","pos","team","overallRank","projec
                               c("projectedPtsMean","projectedPtsMedian"))]
 
 #View projections
-projections
-projections[,c("name","pos","team","projectedPts_fp","projectedPtsMean","projectedPtsMedian")]
+#projections
+#projections[,c("name","pos","team","projectedPts_fp","projectedPtsMean","projectedPtsMedian")]
 
 #Density Plot
-pointDensity <- c(projections$projectedPts_accu, projections$projectedPts_cbs1, projections$projectedPts_cbs2, projections$projectedPts_espn, projections$projectedPts_nfl, projections$projectedPts_fs, projections$projectedPts_fp, projections$projectedPts_fftoday, projections$projectedPts_fbg1, projections$projectedPts_fbg2, projections$projectedPts_fbg3, projections$projectedPts_fbg4, projections$projectedPts_fox) #,projections$projectedPts_accu, projections$projectedPts_cbs, projections$projectedPts_yahoo, projections$projectedPtsLatent, projections$projectedPtsMean
-sourceDensity <- c(rep("Accuscore",dim(projections)[1]), rep("CBS1",dim(projections)[1]), rep("CBS2",dim(projections)[1]), rep("ESPN",dim(projections)[1]), rep("NFL.com",dim(projections)[1]), rep("FantasySharks",dim(projections)[1]), rep("FantasyPros",dim(projections)[1]), rep("FFtoday",dim(projections)[1]), rep("Footballguys1",dim(projections)[1]), rep("Footballguys2",dim(projections)[1]), rep("Footballguys3",dim(projections)[1]), rep("Footballguys4",dim(projections)[1]), rep("FOX",dim(projections)[1])) #,rep("Accuscore",dim(projections)[1]), rep("CBS",dim(projections)[1]), rep("Yahoo",dim(projections)[1]), rep("Latent",dim(projections)[1]), rep("Average",dim(projections)[1])
+pointDensity <- c(projections$projectedPts_accu, projections$projectedPts_cbs1, projections$projectedPts_cbs2, projections$projectedPts_espn, projections$projectedPts_nfl, projections$projectedPts_fs, projections$projectedPts_fp, projections$projectedPts_fftoday, projections$projectedPts_fbg1, projections$projectedPts_fbg2, projections$projectedPts_fbg3, projections$projectedPts_fbg4, projections$projectedPts_fox, projections$projections) #,projections$projectedPts_accu, projections$projectedPts_cbs, projections$projectedPts_yahoo, projections$projectedPtsLatent, projections$projectedPtsMean
+sourceDensity <- c(rep("Accuscore",dim(projections)[1]), rep("CBS1",dim(projections)[1]), rep("CBS2",dim(projections)[1]), rep("ESPN",dim(projections)[1]), rep("NFL.com",dim(projections)[1]), rep("FantasySharks",dim(projections)[1]), rep("FantasyPros",dim(projections)[1]), rep("FFtoday",dim(projections)[1]), rep("Footballguys1",dim(projections)[1]), rep("Footballguys2",dim(projections)[1]), rep("Footballguys3",dim(projections)[1]), rep("Footballguys4",dim(projections)[1]), rep("FOX",dim(projections)[1]), rep(league, dim(projections)[1])) #,rep("Accuscore",dim(projections)[1]), rep("CBS",dim(projections)[1]), rep("Yahoo",dim(projections)[1]), rep("Latent",dim(projections)[1]), rep("Average",dim(projections)[1])
 densityData <- data.frame(pointDensity, sourceDensity)
 
 ggplot(densityData, aes(x=pointDensity, fill=sourceDensity)) + geom_density(alpha=.3) + xlab("Player's Projected Points") + ggtitle("Density Plot of Projected Points") + theme(legend.title=element_blank())
@@ -257,9 +262,9 @@ ggsave(paste(getwd(),"/Figures/Calculate projections.jpg", sep=""), width=10, he
 dev.off()
 
 #Save file
-save(projections, file = paste(getwd(),"/Data/LeagueProjections.RData", sep=""))
-write.csv(projections, file=paste(getwd(),"/Data/LeagueProjections.csv", sep=""), row.names=FALSE)
+save(projections, file = paste(getwd(),"/Data/LeagueProjections_", league, ".RData", sep=""))
+write.csv(projections, file=paste(getwd(),"/Data/LeagueProjections_", league, ".csv", sep=""), row.names=FALSE)
 
-save(projections, file = paste(getwd(),"/Data/Historical Projections/LeagueProjections-2014.RData", sep=""))
-write.csv(projections, file=paste(getwd(),"/Data/Historical Projections/LeagueProjections-2014.csv", sep=""), row.names=FALSE)
+save(projections, file = paste(getwd(),"/Data/Historical Projections/LeagueProjections_", league, "-2014.RData", sep=""))
+write.csv(projections, file=paste(getwd(),"/Data/Historical Projections/LeagueProjections_", league, "-2014.csv", sep=""), row.names=FALSE)
 

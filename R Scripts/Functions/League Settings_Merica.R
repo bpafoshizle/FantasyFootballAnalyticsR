@@ -7,13 +7,16 @@
 # To do:
 ###########################
 
+numTeams = 12
+rounds = 15
+
 #Roster
 numQBstarters <- 1
 numRBstarters <- 2
 numWRstarters <- 3
 numTEstarters <- 1
 numTotalStarters <- 8
-numTotalPlayers <- 24
+numTotalPlayers <- 15
 
 #League settings
 defaultCap <- 200           #what the typical cap is for your service (ESPN, Yahoo, etc.) -- used for placing "avg cost" in context
@@ -52,10 +55,18 @@ sourcesOfProjections <- c("Accuscore", "CBS1", "CBS2", "ESPN", "FantasyFootballN
 sourcesOfProjectionsAbbreviation <- c("accu", "cbs1", "cbs2", "espn", "ffn", "fp", "fs", "fftoday", "fbg1", "fbg2", "fbg3", "fbg4", "fox", "nfl", "wf", "yahoo")
 
 #Number of players at each position drafted in Top 100 (adjust for your league)
-qbReplacements <- 15
-rbReplacements <- 37
-wrReplacements <- 36
-teReplacements <- 11
+# qbReplacements <- 15
+# rbReplacements <- 37
+# wrReplacements <- 36
+# teReplacements <- 11
+
+# Calculate the replacement position based on method from "Fantasy Football for Smart People"
+# Uses S(N) where is is number of starters at the position and N is number of managers/teams
+qbReplacements <- numQBstarters*numTeams
+rbReplacements <- numRBstarters*numTeams
+wrReplacements <- numWRstarters*numTeams
+teReplacements <- numTEstarters*numTeams
+
 
 #Alternative way of calculating the number of players at each position drafted in Top 100 based on league settings
 #numTeams <- 10  #number of teams in league

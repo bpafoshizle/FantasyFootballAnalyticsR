@@ -11,11 +11,12 @@
 library("Rglpk")
 
 #Functions
+source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
 source(paste(getwd(),"/R Scripts/Functions/Functions.R", sep=""))
-source(paste(getwd(),"/R Scripts/Functions/League Settings.R", sep=""))
+source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=""))
 
 #Load data
-load(paste(getwd(),"/Data/AvgCost.RData", sep=""))
+load(paste(getwd(),"/Data/AvgCost_", league, ".RData", sep=""))
 
 #Optimum Risk
 projectedPoints <- vector(mode="numeric", length=length(seq(min(optimizeData$risk), max(optimizeData$risk), 0.1)))

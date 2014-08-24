@@ -14,11 +14,12 @@ maxRisk <- 4.3
 library("Rglpk")
 
 #Functions
+source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
 source(paste(getwd(),"/R Scripts/Functions/Functions.R", sep=""))
-source(paste(getwd(),"/R Scripts/Functions/League Settings.R", sep=""))
+source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=""))
 
 #Load data
-load(paste(getwd(),"/Data/Historical Files/BidUpToSimulation-2014.RData", sep=""))
+load(paste(getwd(),"/Data/Historical Files/BidUpToSimulation_", league, "-2014.RData", sep=""))
 load(paste(getwd(),"/Data/Historical Files/IDP-2014.RData", sep=""))
 load(paste(getwd(),"/Data/Historical Files/kickers-2014.RData", sep=""))
 
@@ -28,8 +29,8 @@ draftData <- draftData[order(-draftData$vor),]
 row.names(draftData) <- 1:dim(draftData)[1]
 
 #Save data
-save(draftData, file = paste(getwd(),"/Data/Historical Files/DraftDay-2014.RData", sep=""))
-write.csv(draftData, file=paste(getwd(),"/Data/Historical Files/DraftDay-2014.csv", sep=""), row.names=FALSE)
+save(draftData, file = paste(getwd(),"/Data/Historical Files/DraftDay_", league, "-2014.RData", sep=""))
+write.csv(draftData, file=paste(getwd(),"/Data/Historical Files/DraftDay_", league, "-2014.csv", sep=""), row.names=FALSE)
 
 options(digits=2)
 draftData

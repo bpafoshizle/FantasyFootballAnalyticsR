@@ -15,12 +15,13 @@ library("XML")
 library("stringr")
 
 #Functions
+source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
 source(paste(getwd(),"/R Scripts/Functions/Functions.R", sep=""))
-source(paste(getwd(),"/R Scripts/Functions/League Settings.R", sep=""))
+source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=""))
 
 #Load data
-load(paste(getwd(),"/Data/LeagueProjections.RData", sep=""))
-load(paste(getwd(),"/Data/wisdomOfTheCrowd.RData", sep=""))
+load(paste(getwd(),"/Data/LeagueProjections_", league, ".RData", sep=""))
+load(paste(getwd(),"/Data/wisdomOfTheCrowd_", league, ".RData", sep=""))
 
 #projections <- projectedWithActualPts
 
@@ -83,12 +84,12 @@ projections[rank(projections$risk, na.last="keep") %in% (max(rank(projections$ri
 
 #Density plot
 ggplot(projections, aes(x=risk)) + geom_density(fill="red", alpha=.7) + xlab("Player's Risk Level") + ggtitle("Density Plot of Players' Risk Levels")
-ggsave(paste(getwd(),"/Figures/Risk.jpg", sep=""), width=10, height=10)
+ggsave(paste(getwd(),"/Figures/Risk_", league, ".jpg", sep=""), width=10, height=10)
 dev.off()
 
 #Save file
-save(projections, file = paste(getwd(),"/Data/Risk.RData", sep=""))
-write.csv(projections, file=paste(getwd(),"/Data/Risk.csv", sep=""), row.names=FALSE)
+save(projections, file = paste(getwd(),"/Data/Risk_", league, ".RData", sep=""))
+write.csv(projections, file=paste(getwd(),"/Data/Risk_", league, ".csv", sep=""), row.names=FALSE)
 
-save(projections, file = paste(getwd(),"/Data/Historical Files/Risk-2014.RData", sep=""))
-write.csv(projections, file=paste(getwd(),"/Data/Historical Files/Risk-2014.csv", sep=""), row.names=FALSE)
+save(projections, file = paste(getwd(),"/Data/Historical Files/Risk_", league, "-2014.RData", sep=""))
+write.csv(projections, file=paste(getwd(),"/Data/Historical Files/Risk_", league, "-2014.csv", sep=""), row.names=FALSE)
