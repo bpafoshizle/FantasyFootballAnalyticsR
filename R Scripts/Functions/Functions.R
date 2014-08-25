@@ -10,6 +10,7 @@
 #Library
 library("Rglpk")
 
+
 #No scientific notation
 options(scipen=999)
 
@@ -32,7 +33,7 @@ convert.magic <- function(obj, type){
 
 #Convert to name for merging by removing all spaces and punctuation and converting to all caps
 nameMerge <- function(name){
-  newName <- toupper(gsub("Sr", "", gsub("Jr", "", gsub("III", "", gsub("[[:punct:]]", "", gsub(" ", "", name))))))
+  newName <- toupper(gsub("Sr", "", gsub("Jr", "", gsub("III", "", gsub("[[:punct:]]", "", gsub("\\s", "", name))))))
   return(newName)
 }
 

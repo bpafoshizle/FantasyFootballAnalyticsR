@@ -10,6 +10,10 @@
 #Library
 library("stringr")
 library("XML")
+library(plyr)
+library(dplyr)
+library(reshape)
+library(ggplot2)
 
 #Functions
 source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
@@ -223,7 +227,7 @@ projections[projections$name %in% projections$name[duplicated(projections$name)]
 projections$avgCost <- projections$costAvg_yahoo
 
 #Calculate Overall Rank
-projections$overallRank <- rank(-projections$projections, ties.method="min")
+projections$overallRank <- rank(-projections$vor, ties.method="min")
 
 #Apply 10% price premium to 33 players with highest projected points, apply 10% price premium for players lower than rank 66
 projections$inflatedCost <- ceiling(projections$avgCost * (leagueCap/defaultCap) * 1.0)
