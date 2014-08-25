@@ -45,7 +45,7 @@ shinyServer(function(input, output) {
     data
   })
 
-  output$staters <- renderDataTable({
+  output$starters <- renderDataTable({
     data <- projections %>%
               filter(!(name %in% input$drafted) & pos %in% input$pos & risk < 5) %>% 
               select(player, pos, team, overallRank, vor, projections, risk, pick, overallRank, pos)

@@ -12,9 +12,11 @@ shinyUI(fluidPage(
     ),  
     # Show a plot of the generated distribution
     mainPanel(
-      dataTableOutput(outputId="rankings")#,
-      #uiOutput("starters"),
-      #uiOutput("starters")
+      tabsetPanel(
+        tabPanel("All Player Rankings", dataTableOutput(outputId="rankings")),
+        tabPanel("Starters", dataTableOutput(outputId="starters")),
+        tabPanel("Sleepers", dataTableOutput(outputId="sleepers"))
+      )
     )
   )
 ))
