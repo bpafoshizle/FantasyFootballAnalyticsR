@@ -12,8 +12,9 @@ library("XML")
 library("stringr")
 
 #Functions
+source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
 source(paste(getwd(),"/R Scripts/Functions/Functions.R", sep=""))
-source(paste(getwd(),"/R Scripts/Functions/League Settings.R", sep=""))
+source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=""))
 
 #Risk - "Experts"
 kickers <- readHTMLTable("http://www.fantasypros.com/nfl/rankings/k-cheatsheets.php", stringsAsFactors = FALSE)$data
@@ -38,8 +39,8 @@ kickers <- kickers[order(kickers$rank),]
 kickers
 
 #Save file
-save(kickers, file = paste(getwd(),"/Data/kickers.RData", sep=""))
-write.csv(kickers, file=paste(getwd(),"/Data/kickers.csv", sep=""), row.names=FALSE)
+save(kickers, file = paste(getwd(),"/Data/kickers_", league, ".RData", sep=""))
+write.csv(kickers, file=paste(getwd(),"/Data/kickers_", league, ".csv", sep=""), row.names=FALSE)
 
-save(kickers, file = paste(getwd(),"/Data/Historical Rankings/kickers-2014.RData", sep=""))
-write.csv(kickers, file=paste(getwd(),"/Data/Historical Rankings/kickers-2014.csv", sep=""), row.names=FALSE)
+save(kickers, file = paste(getwd(),"/Data/Historical Rankings/kickers_", league, "-2014.RData", sep=""))
+write.csv(kickers, file=paste(getwd(),"/Data/Historical Rankings/kickers_", league, "-2014.csv", sep=""), row.names=FALSE)

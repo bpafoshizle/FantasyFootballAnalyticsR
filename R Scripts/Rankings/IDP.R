@@ -12,8 +12,9 @@ library("XML")
 library("stringr")
 
 #Functions
+source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
 source(paste(getwd(),"/R Scripts/Functions/Functions.R", sep=""))
-source(paste(getwd(),"/R Scripts/Functions/League Settings.R", sep=""))
+source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=""))
 
 #Risk - "Experts"
 IDP <- readHTMLTable("http://www.fantasypros.com/nfl/rankings/idp-cheatsheets.php", stringsAsFactors = FALSE)$data
@@ -36,9 +37,9 @@ IDP <- IDP[order(IDP$rank),]
 IDP
 
 #Save file
-save(IDP, file = paste(getwd(),"/Data/IDP.RData", sep=""))
-write.csv(IDP, file=paste(getwd(),"/Data/IDP.csv", sep=""), row.names=FALSE)
+save(IDP, file = paste(getwd(),"/Data/IDP_", league, ".RData", sep=""))
+write.csv(IDP, file=paste(getwd(),"/Data/IDP_", league, ".csv", sep=""), row.names=FALSE)
 
-save(IDP, file = paste(getwd(),"/Data/Historical Rankings/IDP-2014.RData", sep=""))
-write.csv(IDP, file=paste(getwd(),"/Data/Historical Rankings/IDP-2014.csv", sep=""), row.names=FALSE)
+save(IDP, file = paste(getwd(),"/Data/Historical Rankings/IDP_", league, "-2014.RData", sep=""))
+write.csv(IDP, file=paste(getwd(),"/Data/Historical Rankings/IDP_", league, "-2014.csv", sep=""), row.names=FALSE)
 

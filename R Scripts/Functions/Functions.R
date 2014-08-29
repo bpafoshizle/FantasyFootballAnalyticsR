@@ -302,3 +302,31 @@ convertTeamAbbreviation <- function(x){
   
   return(x)
 }
+
+picksBetweenNext <- function(lastPick, pickList){
+  print(nextDraftPick(lastPick, pickList))
+  print(lastPick)
+  return(nextDraftPick(lastPick, pickList) - lastPick - 1)
+}
+
+nextDraftPick <- function(lastPick, pickList){
+  pickList[pickList>=lastPick][1]
+}
+
+calcPickNumbers <- function(numRnds, numTeams, startPick){
+  sapply(seq(1:numRnds), curRndPick, numTeams, startPick)
+}
+
+# Function to calculate the pick number of a round,
+# based on the number of picks per round (number of teams)
+# and the first pick position
+curRndPick <- function(rnd, picksPerRnd, firstPick){
+  if(rnd %% 2 == 0){
+    #print("even")
+    return((rnd * picksPerRnd) - firstPick + 1)
+  }
+  else {
+    #print("odd")
+    return(((rnd - 1) * picksPerRnd) + firstPick)
+  }
+}

@@ -7,8 +7,10 @@ shinyUI(fluidPage(
   # Sidebar with a slider input for the number of bins
   sidebarLayout(
     sidebarPanel(
-      uiOutput("draftedPlayerControl"),
-      uiOutput("positionSelectControl")
+      verbatimTextOutput("roundText"),
+      uiOutput("positionTextControl"),
+      uiOutput("positionSelectControl"),
+      uiOutput("draftedPlayerControl")
     ),  
     # Show a plot of the generated distribution
     mainPanel(

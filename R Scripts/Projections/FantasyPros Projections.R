@@ -89,7 +89,7 @@ if(length(which(projections_fp$name_fp == "")) > 0){
 projections_fp[projections_fp$name %in% projections_fp[duplicated(projections_fp$name),"name"],]
 
 #Same name, different player
-projections_fp <- projections_fp[-which(projections_fp$name=="ZACHMILLER" & projections_fp$team_fp=="CHI"),]
+#projections_fp <- projections_fp[-which(projections_fp$name=="ZACHMILLER" & projections_fp$team_fp=="CHI"),]
 
 #Same player, different position
 dropNames <- c("DEXTERMCCLUSTER")
@@ -139,3 +139,4 @@ write.csv(projections_fp, file=paste(getwd(),"/Data/FantasyPros-Projections.csv"
 
 save(projections_fp, file = paste(getwd(),"/Data/Historical Projections/FantasyPros-Projections-2014.RData", sep=""))
 write.csv(projections_fp, file=paste(getwd(),"/Data/Historical Projections/FantasyPros-Projections-2014.csv", sep=""), row.names=FALSE)
+
