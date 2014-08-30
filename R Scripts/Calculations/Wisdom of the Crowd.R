@@ -104,7 +104,7 @@ while(length(draft.data) < num.obs) {
 }
 dates
 
-#Take list of draft position data frames and convert to single data frame 
+#Take list of draft position data frames and convert to single data frame
 drafts.df <- do.call(rbind, draft.data)
 row.names(drafts.df) <- 1:nrow(drafts.df)
 drafts.df <- as.data.frame(drafts.df, stringsAsFactors=FALSE)
@@ -162,3 +162,4 @@ write.csv(wisdomOfTheCrowd, file=paste(getwd(),"/Data/wisdomOfTheCrowd_", league
 
 save(wisdomOfTheCrowd, file = paste(getwd(),"/Data/Historical Files/wisdomOfTheCrowd_", league, "-2014.RData", sep=""))
 write.csv(wisdomOfTheCrowd, file=paste(getwd(),"/Data/Historical Files/wisdomOfTheCrowd_", league, "-2014.csv", sep=""), row.names=FALSE)
+

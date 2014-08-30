@@ -62,10 +62,11 @@ te[te$lastName %in% te$lastName[duplicated(te$lastName)], c("player","team")]
 
 #Same name, different player
 
+
 #Same player, different position
-dropNames <- c("DENARDROBINSON","DEXTERMCCLUSTER","THEORIDDICK","ORSONCHARLES","JOEWEBB","EMILIGWENAGU","EVANRODRIGUEZ","BRADSMELLEY","RICHIEBROCKEL","BEARPASCOE","JEDCOLLINS","MARCUSTHIGPEN")
-dropVariables <- c("pos","pos","pos","pos","pos","pos","pos","pos","pos","pos","pos","pos")
-dropLabels <- c("RB","WR","WR","TE","WR","RB","TE","TE","RB","RB","TE","WR")
+dropNames <- c("DENARDROBINSON","DEXTERMCCLUSTER","THEORIDDICK","ORSONCHARLES","JOEWEBB","EMILIGWENAGU","EVANRODRIGUEZ","BRADSMELLEY","RICHIEBROCKEL","BEARPASCOE","JEDCOLLINS","MARCUSTHIGPEN", "ALEXSMITH")
+dropVariables <- c("pos","pos","pos","pos","pos","pos","pos","pos","pos","pos","pos","pos", "pos")
+dropLabels <- c("RB","WR","WR","TE","WR","RB","TE","TE","RB","RB","TE","WR", "TE")
 
 projections2 <- ddply(projections, .(name), numcolwise(mean), na.rm=TRUE)
 
