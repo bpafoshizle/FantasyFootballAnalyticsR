@@ -25,7 +25,7 @@ library("ggplot2")
 
 
 base.url <- "http://fantasyfootballcalculator.com/draft/"
-seed.url <- paste("http://fantasyfootballcalculator.com/completed_drafts.php?format=standard&teams=",num.teams,sep="")
+seed.url <- paste("http://fantasyfootballcalculator.com/completed_drafts.php?format=", leagueFormat, "&teams=",num.teams,sep="")
 
 get.seeds <- function(url, rounds, humans) {
   #Returns url ids for drafts matching num.team and rounds criteria

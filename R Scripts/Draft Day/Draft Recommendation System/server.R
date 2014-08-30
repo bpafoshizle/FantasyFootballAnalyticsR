@@ -35,9 +35,12 @@ shinyServer(function(input, output) {
   })
   
   output$roundText  <- renderText({
+    lastPick <- length(input$drafted)
+    pickList <- calcPickNumbers(16, numTeams, as.numeric(input$firstPick))
     pick <- length(input$drafted)
     thisRound <- ceiling(pick/numTeams)
-    paste("Round: ",  as.character(thisRound)," - Pick: ", as.character(pick))
+    picksBeforeMe <- picksBetweenNext(lastPick, pickList)
+    paste("Round: ",  as.character(thisRound)," - Pick: ", as.character(pick+1), " (In front: ", picksBeforeMe, ")", sep="")
   })
   
   # Set up position selector
@@ -54,16 +57,14 @@ shinyServer(function(input, output) {
     lastPick <- length(input$drafted)
     pickList <- calcPickNumbers(16, numTeams, as.numeric(input$firstPick))
     nextPick <- nextDraftPick(lastPick, pickList)
-    picksBeforeMe <- picksBetweenNext(lastPick, pickList)
     
     data <- projections %>% 
               filter(!(name %in% input$drafted) & pos %in% input$pos) %>% 
-              mutate(pcksB4Nxt = picksBeforeMe,
-                     gnB4Nxt = pick<nextPick,
+              mutate(NxtRnd = pick>nextPick,
                      Pts = projections,
                      plyr = player,
                      tm = team) %>%
-              select(plyr, pos, tm, vor, Pts, risk, gnB4Nxt, pcksB4Nxt, pick)
+              select(plyr, pos, tm, vor, Pts, risk, NxtRnd, pick, dropOff)
     data
   }, options = list(iDisplayLength = 8,bFilter = FALSE))
 
@@ -75,12 +76,11 @@ shinyServer(function(input, output) {
     
     data <- projections %>%
               filter(!(name %in% input$drafted) & pos %in% input$pos & risk < 5) %>% 
-              mutate(pcksB4Nxt = picksBeforeMe,
-                     gnB4Nxt = pick<nextPick,
+              mutate(NxtRnd = pick>nextPick,
                      Pts = projections,
                      plyr = player,
                      tm = team) %>%
-              select(plyr, pos, tm, vor, Pts, risk, gnB4Nxt, pcksB4Nxt, pick)
+              select(plyr, pos, tm, vor, Pts, risk, NxtRnd, pick, dropOff)
     data
   }, options = list(iDisplayLength = 8,bFilter = FALSE))
 
@@ -92,14 +92,13 @@ shinyServer(function(input, output) {
     
     data <- projections %>%
               filter(!(name %in% input$drafted) & pos %in% input$pos & risk >= 5) %>% 
-              mutate(pcksB4Nxt = picksBeforeMe,
-                     gnB4Nxt = pick<nextPick,
+              mutate(NxtRnd = pick<nextPick,
                      Pts = projections,
                      plyr = player,
                      tm = team,
                      UpsdPts = Pts + sdPts) %>%
-              select(plyr, pos, tm, UpsdPts, vor, Pts, risk, gnB4Nxt, pcksB4Nxt, pick) %>%
-              arrang(desc(UpsdPts))
+              select(plyr, pos, tm, UpsdPts, vor, Pts, risk, NxtRnd, pick, dropOff) %>%
+              arrange(desc(UpsdPts))
     data
   }, options = list(iDisplayLength = 8,bFilter = FALSE))
 

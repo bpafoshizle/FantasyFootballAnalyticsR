@@ -9,6 +9,7 @@
 
 numTeams = 10
 numRounds = 15
+leagueFormat = "ppr" # ppr or standard - plays into Wisdom of the Crowd
 
 #Roster
 numQBstarters <- 1
@@ -22,6 +23,7 @@ numTotalPlayers <- 14
 defaultCap <- 200           #what the typical cap is for your service (ESPN, Yahoo, etc.) -- used for placing "avg cost" in context
 leagueCap <- 225            #your league's cap
 maxCost <- leagueCap - (numTotalPlayers - numTotalStarters)
+
 
 #Variable names
 prefix <- c("name","pos")

@@ -304,29 +304,50 @@ convertTeamAbbreviation <- function(x){
 }
 
 picksBetweenNext <- function(lastPick, pickList){
-  print(nextDraftPick(lastPick, pickList))
-  print(lastPick)
-  return(nextDraftPick(lastPick, pickList) - lastPick - 1)
+  nextPick = nextDraftPick(lastPick, pickList)
+  
+  return(isnull(nextPick, 1, "picksBetweenNext nextPick") - isnull(lastPick, 1, "picksBetweenNext lastPick") - 1)
 }
 
 nextDraftPick <- function(lastPick, pickList){
-  pickList[pickList>=lastPick][1]
+  return(pickList[pickList>(lastPick+1)][1])
 }
 
 calcPickNumbers <- function(numRnds, numTeams, startPick){
-  sapply(seq(1:numRnds), curRndPick, numTeams, startPick)
+  sapply(seq(1:numRnds), curRndPick, numTeams, isnull(startPick, 1, "calcPickNumbers"))
 }
 
 # Function to calculate the pick number of a round,
 # based on the number of picks per round (number of teams)
 # and the first pick position
+# http://math.stackexchange.com/questions/298973/formula-for-snake-draft-pick-numbers
 curRndPick <- function(rnd, picksPerRnd, firstPick){
   if(rnd %% 2 == 0){
-    #print("even")
     return((rnd * picksPerRnd) - firstPick + 1)
   }
   else {
-    #print("odd")
     return(((rnd - 1) * picksPerRnd) + firstPick)
+  }
+}
+
+# Function to turn nulls into something else
+isnull <- function(x, r, caller){
+  #print(paste("In isnull, called by ", caller, ", x is ", x, sep=""))
+  #print(paste("In isnull, called by ", caller, ", x is a ", class(x), sep=""))
+  if(is.null(x)){
+    #print("x is null")
+    r
+  }
+  else if(class(x) == "NULL")
+  {
+    #print("x is a NULL")
+    r
+  }
+  else if(length(x) == 0){
+    #print("x is an empty list")
+    r
+  }
+  else{
+    x
   }
 }

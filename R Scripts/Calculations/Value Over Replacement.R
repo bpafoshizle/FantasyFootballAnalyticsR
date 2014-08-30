@@ -7,6 +7,10 @@
 # To do:
 ###########################
 
+# Libraries
+library(dplyr)
+library(ggplot2)
+
 #Functions
 source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
 source(paste(getwd(),"/R Scripts/Functions/Functions.R", sep=""))
@@ -36,6 +40,37 @@ rb$vor <- rb$projections - rbValueOfReplacement
 wr$vor <- wr$projections - wrValueOfReplacement
 te$vor <- te$projections - teValueOfReplacement
 
+# Calculate drop off as each player's projected points minus the average of the next two players
+# at the same potision
+qb <- qb %>% 
+  arrange(-projections) %>%
+  mutate(#nextBestProj = lead(projections),
+         #secNextBestProj = lead(projections, 2),
+         nextBestAvg = (lead(projections) + lead(projections, 2))/2,
+         dropOff = projections - ((lead(projections) + lead(projections, 2))/2)
+  )
+rb <- rb %>% 
+  arrange(-projections) %>%
+  mutate(#nextBestProj = lead(projections),
+    #secNextBestProj = lead(projections, 2),
+    nextBestAvg = (lead(projections) + lead(projections, 2))/2,
+    dropOff = projections - ((lead(projections) + lead(projections, 2))/2)
+  )
+wr <- wr %>% 
+  arrange(-projections) %>%
+  mutate(#nextBestProj = lead(projections),
+    #secNextBestProj = lead(projections, 2),
+    nextBestAvg = (lead(projections) + lead(projections, 2))/2,
+    dropOff = projections - ((lead(projections) + lead(projections, 2))/2)
+  )
+te <- te %>% 
+  arrange(-projections) %>%
+  mutate(#nextBestProj = lead(projections),
+    #secNextBestProj = lead(projections, 2),
+    nextBestAvg = (lead(projections) + lead(projections, 2))/2,
+    dropOff = projections - ((lead(projections) + lead(projections, 2))/2)
+  )
+  
 #Merge across positions
 projections <- rbind(qb,rb,wr,te)
 
@@ -47,7 +82,7 @@ projections <- projections[order(projections$overallRank),]
 row.names(projections) <- 1:dim(projections)[1]
 
 #Reorder variables
-projections <- projections[,c("name","player","pos","team","overallRank","pick","positionRank","projections",paste("projectedPts", sourcesOfProjectionsAbbreviation, sep="_"),"projectedPtsMean","projectedPtsMedian","vor","sdPick","sdPts","risk")] #,"projectedPtsLatent"
+projections <- projections[,c("name","player","pos","team","overallRank","pick","positionRank","projections",paste("projectedPts", sourcesOfProjectionsAbbreviation, sep="_"),"projectedPtsMean","projectedPtsMedian","vor","sdPick","sdPts","risk","nextBestAvg","dropOff")] #,"projectedPtsLatent"
 
 #Starters (low risk)
 projections[which(projections$risk <= 5 & projections$vor >= 0),]

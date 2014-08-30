@@ -13,8 +13,8 @@ source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=
 # Rankings
 ###############
 
-source(paste(getwd(),"/R Scripts/Rankings/IDP.R", sep=""), echo=TRUE)
-source(paste(getwd(),"/R Scripts/Rankings/Kickers.R", sep=""), echo=TRUE)
+#source(paste(getwd(),"/R Scripts/Rankings/IDP.R", sep=""), echo=TRUE)
+#source(paste(getwd(),"/R Scripts/Rankings/Kickers.R", sep=""), echo=TRUE)
 
 ###############
 # Projections
@@ -34,7 +34,7 @@ source(paste(getwd(),"/R Scripts/Projections/FFtoday Projections.R", sep=""), ec
 #source(paste(getwd(),"/R Scripts/Projections/Footballguys4 Projections.R", sep=""), echo=TRUE)#Paywalled
 source(paste(getwd(),"/R Scripts/Projections/FOX Projections.R", sep=""), echo=TRUE)
 source(paste(getwd(),"/R Scripts/Projections/NFL Projections.R", sep=""), echo=TRUE)
-source(paste(getwd(),"/R Scripts/Projections/WalterFootball Projections.R", sep=""), echo=TRUE)
+#source(paste(getwd(),"/R Scripts/Projections/WalterFootball Projections.R", sep=""), echo=TRUE) # later, he doesn't use anyway
 source(paste(getwd(),"/R Scripts/Projections/Yahoo Projections.R", sep=""), echo=TRUE)
 
 ###############
