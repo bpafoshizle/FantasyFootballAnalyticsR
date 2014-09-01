@@ -6,6 +6,10 @@
 # Notes:
 # To do:
 ###########################
+library(reshape)
+library(plyr)
+library(ggplot2)
+
 
 #Functions
 source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
@@ -121,7 +125,7 @@ drafts.stats <- ddply(drafts.df, .(Player, Position, Team), summarise, mean=mean
 drafts.stats[which(drafts.stats$mad == 0), "mad"] <- drafts.stats[which(drafts.stats$mad == 0), "sd"]
 
 #Clean up
-drafts.stats$name_ffc <- as.character(drafts.stats$Player)
+drafts.stats$name_ffc <- gsub("[\r\n]", " ", as.character(drafts.stats$Player))
 drafts.stats$name_ffc <- gsub("DefenseD", "", drafts.stats$name_ffc)
 drafts.stats$name <- nameMerge(drafts.stats$name_ffc)
 drafts.stats$pos <- as.character(drafts.stats$Position)

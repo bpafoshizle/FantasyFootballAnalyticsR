@@ -2,5 +2,5 @@
 
 
 # Create league specific settings and specify which to run for
-#league <- "Merica"
-league <- "RZBK"
+league <- "Merica"
+#league <- "RZBK"

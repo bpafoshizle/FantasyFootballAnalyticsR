@@ -8,7 +8,8 @@
 ###########################
 
 numTeams = 12
-rounds = 15
+numRounds = 15
+leagueFormat = "standard" # ppr or standard - plays into Wisdom of the Crowd
 
 #Roster
 numQBstarters <- 1
