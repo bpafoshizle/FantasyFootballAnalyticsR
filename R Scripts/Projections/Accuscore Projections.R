@@ -109,7 +109,6 @@ projections_accu[which(projections_accu$pos == "DL"), "positionRank_accu"] <- ra
 projections_accu[which(projections_accu$pos == "LB"), "positionRank_accu"] <- rank(-projections_accu[which(projections_accu$pos == "LB"), "pts_accu"], ties.method="min")
 projections_accu[which(projections_accu$pos == "DB"), "positionRank_accu"] <- rank(-projections_accu[which(projections_accu$pos == "DB"), "pts_accu"], ties.method="min")
 
-
 #Order variables in data set
 projections_accu <- projections_accu[,c(prefix, paste(varNames, suffix, sep="_"))]
 
@@ -123,8 +122,8 @@ ggsave(paste(getwd(),"/Figures/Accuscore projections.jpg", sep=""), width=10, he
 dev.off()
 
 #Save file
-save(projections_accu, file = paste(getwd(),"/Data/Accuscore-Projections.RData", sep=""))
-write.csv(projections_accu, file=paste(getwd(),"/Data/Accuscore-Projections.csv", sep=""), row.names=FALSE)
+save(projections_accu, file = paste(getwd(), "/Data/Accuscore-Projections.RData", sep=""))
+write.csv(projections_accu, file=paste(getwd(), "/Data/Accuscore-Projections.csv", sep=""), row.names=FALSE)
 
-save(projections_accu, file = paste(getwd(),"/Data/Historical Projections/Accuscore-Projections-2014.RData", sep=""))
-write.csv(projections_accu, file=paste(getwd(),"/Data/Historical Projections/Accuscore-Projections-2014.csv", sep=""), row.names=FALSE)
+save(projections_accu, file = paste(getwd(), "/Data/Historical Projections/Accuscore-Projections-", season, ".RData", sep=""))
+write.csv(projections_accu, file=paste(getwd(), "/Data/Historical Projections/Accuscore-Projections-", season, ".csv", sep=""), row.names=FALSE)

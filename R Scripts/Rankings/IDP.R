@@ -29,17 +29,33 @@ IDP$pos <- gsub("\\d", "", IDP$pos)
 IDP$rank <- as.numeric(IDP[,"Ave"])
 IDP$risk <- as.numeric(IDP[,"Std Dev"])
 
+#Subset columns
 IDP <- IDP[,c("name","player","pos","team","rank","risk")]
 
+#Remove rows with all NAs
+IDP <- IDP[rowSums(is.na(IDP)) != ncol(IDP),]
+
+#Sort by rank
 IDP <- IDP[order(IDP$rank),]
+
+#Row names
+row.names(IDP) <- 1:nrow(IDP)
 
 #View Rankings
 IDP
 
 #Save file
+<<<<<<< HEAD
 save(IDP, file = paste(getwd(),"/Data/IDP_", league, ".RData", sep=""))
 write.csv(IDP, file=paste(getwd(),"/Data/IDP_", league, ".csv", sep=""), row.names=FALSE)
 
 save(IDP, file = paste(getwd(),"/Data/Historical Rankings/IDP_", league, "-2014.RData", sep=""))
 write.csv(IDP, file=paste(getwd(),"/Data/Historical Rankings/IDP_", league, "-2014.csv", sep=""), row.names=FALSE)
+=======
+save(IDP, file = paste(getwd(), "/Data/IDP.RData", sep=""))
+write.csv(IDP, file=paste(getwd(), "/Data/IDP.csv", sep=""), row.names=FALSE)
+
+save(IDP, file = paste(getwd(), "/Data/Historical Rankings/IDP-", season, ".RData", sep=""))
+write.csv(IDP, file=paste(getwd(), "/Data/Historical Rankings/IDP-", season, ".csv", sep=""), row.names=FALSE)
+>>>>>>> upstream/master
 

@@ -20,26 +20,23 @@ source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=
 load(paste(getwd(),"/Data/Risk_", league, ".RData", sep=""))
 
 #Calculate Value over Replacement
-qb <- projections[projections$pos=="QB",][order(projections[projections$pos=="QB",]$overallRank),]
-rb <- projections[projections$pos=="RB",][order(projections[projections$pos=="RB",]$overallRank),]
-wr <- projections[projections$pos=="WR",][order(projections[projections$pos=="WR",]$overallRank),]
-te <- projections[projections$pos=="TE",][order(projections[projections$pos=="TE",]$overallRank),]
+projectionsRobustAvg <- projections[which(sourceName == "averageRobust"),]
 
-qb$positionRank <- rank(-qb$projections, ties.method="min") #projectedPtsLatent
-rb$positionRank <- rank(-rb$projections, ties.method="min") #projectedPtsLatent
-wr$positionRank <- rank(-wr$projections, ties.method="min") #projectedPtsLatent
-te$positionRank <- rank(-te$projections, ties.method="min") #projectedPtsLatent
+qbValueOfReplacement <- mean(c(projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "QB" & projectionsRobustAvg$positionRank == qbReplacements)], projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "QB" & projectionsRobustAvg$positionRank == qbReplacements-1)], projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "QB" & projectionsRobustAvg$positionRank == qbReplacements+1)]))
+rbValueOfReplacement <- mean(c(projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "RB" & projectionsRobustAvg$positionRank == rbReplacements)], projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "RB" & projectionsRobustAvg$positionRank == rbReplacements-1)], projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "RB" & projectionsRobustAvg$positionRank == rbReplacements+1)]))
+wrValueOfReplacement <- mean(c(projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "WR" & projectionsRobustAvg$positionRank == wrReplacements)], projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "WR" & projectionsRobustAvg$positionRank == wrReplacements-1)], projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "WR" & projectionsRobustAvg$positionRank == wrReplacements+1)]))
+teValueOfReplacement <- mean(c(projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "TE" & projectionsRobustAvg$positionRank == teReplacements)], projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "TE" & projectionsRobustAvg$positionRank == teReplacements-1)], projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "TE" & projectionsRobustAvg$positionRank == teReplacements+1)]))
 
-qbValueOfReplacement <- print(mean(c(qb$projections[qb$positionRank==qbReplacements],qb$projections[qb$positionRank==(qbReplacements-1)],qb$projections[qb$positionRank==(qbReplacements+1)]))) #projectedPtsLatent
-rbValueOfReplacement <- print(mean(c(rb$projections[rb$positionRank==rbReplacements],rb$projections[rb$positionRank==(rbReplacements-1)],rb$projections[rb$positionRank==(rbReplacements+1)])))
-wrValueOfReplacement <- print(mean(c(wr$projections[wr$positionRank==wrReplacements],wr$projections[wr$positionRank==(wrReplacements-1)],wr$projections[wr$positionRank==(wrReplacements+1)])))
-teValueOfReplacement <- print(mean(c(te$projections[te$positionRank==teReplacements],te$projections[te$positionRank==(teReplacements-1)],te$projections[te$positionRank==(teReplacements+1)])))
+projections[which(pos == "QB"), vor := points - qbValueOfReplacement]
+projections[which(pos == "RB"), vor := points - rbValueOfReplacement]
+projections[which(pos == "WR"), vor := points - wrValueOfReplacement]
+projections[which(pos == "TE"), vor := points - teValueOfReplacement]
 
-qb$vor <- qb$projections - qbValueOfReplacement
-rb$vor <- rb$projections - rbValueOfReplacement
-wr$vor <- wr$projections - wrValueOfReplacement
-te$vor <- te$projections - teValueOfReplacement
+#Calculate ranks by VOR
+projections <- projections[order(-vor)][,overallRank := 1:.N, by=list(sourceName)]
+projections <- projections[order(-vor)][,positionRank := 1:.N, by=list(sourceName, pos)]
 
+<<<<<<< HEAD
 # Calculate drop off as each player's projected points minus the average of the next two players
 # at the same potision
 qb <- qb %>% 
@@ -83,6 +80,11 @@ row.names(projections) <- 1:dim(projections)[1]
 
 #Reorder variables
 projections <- projections[,c("name","player","pos","team","overallRank","pick","positionRank","projections",paste("projectedPts", sourcesOfProjectionsAbbreviation, sep="_"),"projectedPtsMean","projectedPtsMedian","vor","sdPick","sdPts","risk","nextBestAvg","dropOff")] #,"projectedPtsLatent"
+=======
+#Select and order variables
+keepVars <- finalVarNames[finalVarNames %in% names(projections)]
+projections <- projections[,keepVars, with=FALSE]
+>>>>>>> upstream/master
 
 #Starters (low risk)
 projections[which(projections$risk <= 5 & projections$vor >= 0),]
@@ -92,11 +94,12 @@ projections[which(projections$risk >=5 & projections$vor >= 0),]
 
 #Density Plot
 ggplot(projections[which(projections$vor >= 0),], aes(x=vor, fill=pos)) + geom_density(alpha=.3) + xlab("Player's Value Over Replacement") + ggtitle("Density Plot of Projected VOR") + theme(legend.title=element_blank())
-ggsave(paste(getwd(),"/Figures/VOR-Density.jpg", sep=""), width=10, height=10)
+ggsave(paste0(getwd(), "/Figures/VOR-Density.jpg"), width=10, height=10)
 dev.off()
 
 #Boxplot
 qplot(pos, vor, data=projections[which(projections$vor >= 0),], geom=c("boxplot", "jitter"), fill=pos, main="Value Over Replacement By Position", xlab="", ylab="Value Over Replacement")
+<<<<<<< HEAD
 ggsave(paste(getwd(),"/Figures/VOR-Boxplot_",league, ".jpg", sep=""), width=10, height=10)
 dev.off()
 
@@ -106,9 +109,20 @@ write.csv(projections, file=paste(getwd(),"/Data/VOR_", league, ".csv", sep=""),
 
 save(projections, file = paste(getwd(),"/Data/Historical Files/VOR_", league, "-2014.RData", sep=""))
 write.csv(projections, file=paste(getwd(),"/Data/Historical Files/VOR_", league, "-2014.csv", sep=""), row.names=FALSE)
+=======
+ggsave(paste0(getwd(), "/Figures/VOR-Boxplot.jpg"), width=10, height=10)
+dev.off()
+
+#Save file
+save(projections, file = paste0(getwd(), "/Data/VOR.RData"))
+write.csv(projections, file = paste0(getwd(), "/Data/VOR.csv"), row.names=FALSE)
+
+save(projections, file = paste0(getwd(), "/Data/Historical Files/VOR-", season, ".RData"))
+write.csv(projections, file = paste0(getwd(), "/Data/Historical Files/VOR-", season, ".csv"), row.names=FALSE)
+>>>>>>> upstream/master
 
 #Subset data
-draftData <- projections[row.names(na.omit(projections[,c("projections","vor","risk")])),c("name","pos","team","projections","vor","sdPick","sdPts","risk")] #projectedPtsLatent
+draftData <- projections[as.numeric(row.names(na.omit(projections[,c("points","vor","risk"), with=FALSE]))), c("name","pos","team","points","vor","sdPick","sdPts","risk"), with=FALSE] #projectedPtsLatent
 row.names(draftData) <- 1:dim(draftData)[1]
 
 options(digits=2)

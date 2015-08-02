@@ -23,7 +23,7 @@ suffix <- "fs"
 projections_fs <- read.csv("http://www.fantasysharks.com/apps/Projections/SeasonCSVProjections.php?l=11", stringsAsFactors = FALSE)
 
 #Player position
-projections_fs$pos <- projections_fs$Pos
+projections_fs$pos <- as.factor(projections_fs$Pos)
 
 #Keep only QB, RB, WR, TE
 projections_fs <- projections_fs[which(projections_fs$pos %in% c("QB","RB","WR","TE")),]
@@ -60,13 +60,15 @@ projections_fs[,c("passAtt_fs","passComp_fs","passYds_fs","passTds_fs","passInt_
 projections_fs[projections_fs$name %in% projections_fs[duplicated(projections_fs$name),"name"],]
 
 #Same name, different player
-projections_fs <- projections_fs[-which(projections_fs$name=="RYANGRIFFIN" & projections_fs$pos=="QB"),]
+projections_fs <- projections_fs[-which(projections_fs$name=="ALEXSMITH" & projections_fs$team_fs=="CIN"),]
+projections_fs <- projections_fs[-which(projections_fs$name=="ZACHMILLER" & projections_fs$team_fs=="CHI"),]
+#projections_fs <- projections_fs[-which(projections_fs$name=="RYANGRIFFIN" & projections_fs$pos=="QB"),]
 
 #Same player, different position
 
 #Rename players
-projections_fs[projections_fs$name=="BENWATSON", "name"] <- "BENJAMINWATSON"
-projections_fs[projections_fs$name=="STEVIEJOHNSON", "name"] <- "STEVEJOHNSON"
+if(length(projections_fs[projections_fs$name == "BENJAMINWATSON", "name"]) > 0){projections_fs[projections_fs$name == "BENJAMINWATSON", "name"] <- "BENJAMINWATSON"}
+if(length(projections_fs[projections_fs$name == "STEVIEJOHNSON", "name"]) > 0){projections_fs[projections_fs$name == "STEVIEJOHNSON", "name"] <- "STEVEJOHNSON"}
 
 #Calculate overall rank
 projections_fs$overallRank_fs <- rank(-projections_fs$pts_fs, ties.method="min")
@@ -91,8 +93,8 @@ ggsave(paste(getwd(),"/Figures/FantasySharks projections.jpg", sep=""), width=10
 dev.off()
 
 #Save file
-save(projections_fs, file = paste(getwd(),"/Data/FantasySharks-Projections.RData", sep=""))
-write.csv(projections_fs, file=paste(getwd(),"/Data/FantasySharks-Projections.csv", sep=""), row.names=FALSE)
+save(projections_fs, file = paste(getwd(), "/Data/FantasySharks-Projections.RData", sep=""))
+write.csv(projections_fs, file=paste(getwd(), "/Data/FantasySharks-Projections.csv", sep=""), row.names=FALSE)
 
-save(projections_fs, file = paste(getwd(),"/Data/Historical Projections/FantasySharks-Projections-2014.RData", sep=""))
-write.csv(projections_fs, file=paste(getwd(),"/Data/Historical Projections/FantasySharks-Projections-2014.csv", sep=""), row.names=FALSE)
+save(projections_fs, file = paste(getwd(), "/Data/Historical Projections/FantasySharks-Projections-", season, ".RData", sep=""))
+write.csv(projections_fs, file=paste(getwd(), "/Data/Historical Projections/FantasySharks-Projections-", season, ".csv", sep=""), row.names=FALSE)

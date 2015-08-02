@@ -33,15 +33,24 @@ convert.magic <- function(obj, type){
 
 #Convert to name for merging by removing all spaces and punctuation and converting to all caps
 nameMerge <- function(name){
+<<<<<<< HEAD
   newName <- toupper(gsub("Sr", "", gsub("Jr", "", gsub("III", "", gsub("[[:punct:]]", "", gsub("\\s", "", name))))))
+=======
+  newName <- toupper(gsub("Sr|Jr|III|[[:punct:]]| ", "", name))
+>>>>>>> upstream/master
   return(newName)
 }
 
 #Function for calculating Mean Absolute Scaled Error (MASE)
-calculateMASE <- function(f,y) { # f = vector with forecasts, y = vector with actuals
-  if(length(f)!=length(y)){ stop("Vector length is not equal") }
-  n <- length(f)
-  return(mean(abs((y - f) / ((1/(n-1)) * sum(abs(y[2:n]-y[1:n-1]))))))
+calculateMASE <- function(forecast, actual){
+  mydata <- data.frame(na.omit(cbind(forecast, actual)))
+
+  errors <- mydata$actual - mydata$forecast
+  scalingFactor <- mean(abs(mydata$actual - mean(mydata$forecast)))
+  scaledErrors <- errors/scalingFactor
+  
+  MASE <- mean(abs(scaledErrors))
+  return(MASE)
 }
 
 #Function for calculating the weighted standard deviation for mean/sd rescaling (used in the function below)
@@ -112,7 +121,7 @@ simulateNumbers <- function(n, sum, sd, pos.only = TRUE){
 }
 
 #Create Optimization Function
-optimizeTeam <- function(points=optimizeData$projections, playerCost=optimizeData$inflatedCost, maxRisk=maxRisk){ #can change points, cost, or risk #projectedPtsLatent
+optimizeTeam <- function(points=optimizeData$points, playerCost=optimizeData$inflatedCost, maxRisk=maxRisk){ #can change points, cost, or risk
   num.players <- length(optimizeData$name)
   var.types <- rep("B", num.players)
   
@@ -141,16 +150,15 @@ optimizeTeam <- function(points=optimizeData$projections, playerCost=optimizeDat
          numTotalStarters)
   
   sol <- Rglpk_solve_LP(obj = points, mat = A, dir = dir, rhs = b,types = var.types, max = TRUE)
-  sol$playerInfo <- as.data.frame(cbind(optimizeData[sol$solution == 1,"player"],round(points[sol$solution == 1],2),round(optimizeData[sol$solution == 1,"risk"],2),playerCost[sol$solution == 1]))
+  sol$playerInfo <- as.data.frame(cbind(optimizeData[sol$solution == 1, "player", with=FALSE], round(points[sol$solution == 1], 2), round(optimizeData[sol$solution == 1, "risk", with=FALSE], 2), playerCost[sol$solution == 1]))
   names(sol$playerInfo) <- c("player","points","risk","cost")
-  #sol$totalCost <- sum(optimizeData$inflatedCost * sol$solution)
   sol$totalCost <- sum(playerCost * sol$solution)
   sol$players <- optimizeData$player[sol$solution == 1]
   return(sol)
 }
 
 #Draft Day Optimization: Allows omitting unavailable (drafted) players and includes BidUpTo in summary table
-optimizeDraft <- function(points=removedPlayers$projections, playerCost=removedPlayers$inflatedCost, maxRisk=maxRisk, omit=NULL, team=myteam){ #can change points, cost, or risk #projectedPtsLatent
+optimizeDraft <- function(points=removedPlayers$points, playerCost=removedPlayers$inflatedCost, maxRisk=maxRisk, omit=NULL, team=myteam){ #can change points, cost, or risk
   #Omit players that have already been drafted
   omitName <- toupper(gsub("[[:punct:]]", "", gsub(" ", "", omit)))
   removedPlayers <- removedPlayers[! removedPlayers$name %in% omitName,]
@@ -195,7 +203,7 @@ optimizeDraft <- function(points=removedPlayers$projections, playerCost=removedP
          numToDraft)
   
   sol <- Rglpk_solve_LP(obj = points, mat = A, dir = dir, rhs = b,types = var.types, max = TRUE)
-  sol$playerInfo <- as.data.frame(cbind(removedPlayers[sol$solution == 1,"player"],round(points[sol$solution == 1],2),round(removedPlayers[sol$solution == 1,"risk"],2),removedPlayers[sol$solution == 1,"avgCost"],playerCost[sol$solution == 1],removedPlayers[sol$solution == 1,"bidUpTo"]))
+  sol$playerInfo <- as.data.frame(cbind(removedPlayers[sol$solution == 1, "player", with=FALSE], round(points[sol$solution == 1], 2), round(removedPlayers[sol$solution == 1, "risk", with=FALSE], 2), removedPlayers[sol$solution == 1, "avgCost", with=FALSE], playerCost[sol$solution == 1], removedPlayers[sol$solution == 1, "bidUpTo", with=FALSE]))
   names(sol$playerInfo) <- c("player","points","risk","avgCost","inflatedCost","bidUpTo")
   sol$totalCost <- sum(removedPlayers$inflatedCost * sol$solution)
   sol$players <- removedPlayers$player[sol$solution == 1]
@@ -236,6 +244,9 @@ convertTeamAbbreviation <- function(x){
   
   x[grep("Detroit", x, ignore.case=TRUE)] <- "DET"
   x[grep("Lions", x, ignore.case=TRUE)] <- "DET"
+  
+  x[grep("Free", x, ignore.case=TRUE)] <- "FA"
+  x[grep("Agent", x, ignore.case=TRUE)] <- "FA"
   
   x[grep("Green Bay", x, ignore.case=TRUE)] <- "GB"
   x[grep("Packers", x, ignore.case=TRUE)] <- "GB"
@@ -303,6 +314,7 @@ convertTeamAbbreviation <- function(x){
   return(x)
 }
 
+<<<<<<< HEAD
 picksBetweenNext <- function(lastPick, pickList){
   nextPick = nextDraftPick(lastPick, pickList)
   
@@ -351,3 +363,111 @@ isnull <- function(x, r, caller){
     x
   }
 }
+=======
+#Convert team abbreviations to cities/nicknames
+convertTeamName <- function(x){
+  x[which(toupper(x) == "ARI")] <- "Arizona Cardinals"
+  x[which(toupper(x) == "ARZ")] <- "Arizona Cardinals"
+  x[which(toupper(x) == "ATL")] <- "Atlanta Falcons"
+  x[which(toupper(x) == "BAL")] <- "Baltimore Ravens"
+  x[which(toupper(x) == "BUF")] <- "Buffalo Bills"
+  x[which(toupper(x) == "CAR")] <- "Carolina Panthers"
+  x[which(toupper(x) == "CHI")] <- "Chicago Bears"
+  x[which(toupper(x) == "CIN")] <- "Cincinnati Bengals"
+  x[which(toupper(x) == "CLE")] <- "Cleveland Browns"
+  x[which(toupper(x) == "DAL")] <- "Dallas Cowboys"
+  x[which(toupper(x) == "DEN")] <- "Denver Broncos"
+  x[which(toupper(x) == "DET")] <- "Detroit Lions"
+  x[which(toupper(x) == "FA")] <- "Free Agent"
+  x[which(toupper(x) == "GB")] <- "Green Bay Packers"
+  x[which(toupper(x) == "GBP")] <- "Green Bay Packers"
+  x[which(toupper(x) == "HOU")] <- "Houston Texans"
+  x[which(toupper(x) == "IND")] <- "Indianapolis Colts"
+  x[which(toupper(x) == "JAC")] <- "Jacksonville Jaguars"
+  x[which(toupper(x) == "JAX")] <- "Jacksonville Jaguars"
+  x[which(toupper(x) == "KC")] <- "Kansas City Chiefs"
+  x[which(toupper(x) == "KCC")] <- "Kansas City Chiefs"
+  x[which(toupper(x) == "MIA")] <- "Miami Dolphins"
+  x[which(toupper(x) == "MIN")] <- "Minnesota Vikings"
+  x[which(toupper(x) == "NEW")] <- "New England Patriots"
+  x[which(toupper(x) == "NE")] <- "New England Patriots"
+  x[which(toupper(x) == "NOS")] <- "New Orleans Saints"
+  x[which(toupper(x) == "NO")] <- "New Orleans Saints"
+  x[which(toupper(x) == "NYJ")] <- "New York Jets"
+  x[which(toupper(x) == "NYG")] <- "New York Giants"
+  x[which(toupper(x) == "OAK")] <- "Oakland Raiders"
+  x[which(toupper(x) == "PHI")] <- "Philadelphia Eagles"
+  x[which(toupper(x) == "PIT")] <- "Pittsburgh Steelers"
+  x[which(toupper(x) == "SD")] <- "San Diego Chargers"
+  x[which(toupper(x) == "SDC")] <- "San Diego Chargers"
+  x[which(toupper(x) == "SAN")] <- "San Diego Chargers"
+  x[which(toupper(x) == "ST")] <- "St. Louis Rams"
+  x[which(toupper(x) == "STL")] <- "St. Louis Rams"
+  x[which(toupper(x) == "SF")] <- "San Francisco 49ers"
+  x[which(toupper(x) == "SFO")] <- "San Francisco 49ers"
+  x[which(toupper(x) == "SEA")] <- "Seattle Seahawks"
+  x[which(toupper(x) == "TB")] <- "Tampa Bay Buccaneers"
+  x[which(toupper(x) == "TBB")] <- "Tampa Bay Buccaneers"
+  x[which(toupper(x) == "TEN")] <- "Tennessee Titans"
+  x[which(toupper(x) == "WAS")] <- "Washington Redskins"
+  x[which(toupper(x) == "WSH")] <- "Washington Redskins"
+  
+  return(x)
+}
+
+#Convert team abbreviations to cities/nicknames
+cleanTeamAbbreviations <- function(x){
+  x[which(toupper(x) == "ARI")] <- "ARZ"
+  x[which(toupper(x) == "GBP")] <- "GB"
+  x[which(toupper(x) == "JAX")] <- "JAC"
+  x[which(toupper(x) == "KCC")] <- "KC"
+  x[which(toupper(x) == "NEW")] <- "NE"
+  x[which(toupper(x) == "NOS")] <- "NO"
+  x[which(toupper(x) == "SAN")] <- "SD"
+  x[which(toupper(x) == "SDC")] <- "SD"
+  x[which(toupper(x) == "ST")] <- "STL"
+  x[which(toupper(x) == "SFO")] <- "SF"
+  x[which(toupper(x) == "TBB")] <- "TB"
+  x[which(toupper(x) == "WSH")] <- "WAS"
+  
+  return(x)
+}
+
+#Function for adding missing rows to a data.table by cross-join
+CJ.dt = function(...) {
+  rows = do.call(CJ, lapply(list(...), function(x) if(is.data.frame(x)) seq_len(nrow(x)) else seq_along(x)));
+  do.call(data.table, Map(function(x, y) x[y], list(...), rows))
+}
+
+# Function to calculate the location estimate for the wilcox test
+wilcox.loc <- function(vec){
+  n <- length(vec)
+  
+  # If number of observations is less than 2 then we just return mean as location estimate
+  if(n <= 2){
+    return(mean(vec, na.rm = TRUE))
+  }
+  
+  # Calculating the paired avagerages
+  pairAvg <- sort(c(vec, combn(vec, 2, function(x)mean(x, na.rm = TRUE))))
+  
+  return(median(pairAvg, na.rm = TRUE))
+}
+
+# Function to calculate DST points from the ptsAllowed brackets
+dstPts <- function(ptsAllow, brackets){
+  is.season <- all(ptsAllow > 100)
+  if(is.season){
+    ptsAllow <- ptsAllow / 16
+  }
+  pts <- rep(0, length(ptsAllow))
+  for(r in nrow(brackets):1){
+    pts[ptsAllow <= brackets$threshold[r]] <- brackets$points[r]
+  }
+  
+  if(is.season){
+    pts <- pts * 16
+  }
+  return(as.numeric(pts))
+}
+>>>>>>> upstream/master

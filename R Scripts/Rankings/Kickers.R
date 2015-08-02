@@ -31,16 +31,29 @@ kickers$team <- str_sub(kickers[,c("Player (team/bye)")], start=str_locate(kicke
 kickers$rank <- as.numeric(kickers[,"Ave"])
 kickers$risk <- as.numeric(kickers[,"Std Dev"])
 
+#Subset columns
 kickers <- kickers[,c("name","player","team","rank","risk")]
 
+#Remove rows with all NAs
+kickers <- kickers[rowSums(is.na(kickers)) != ncol(kickers),]
+
+#Sort by rank
 kickers <- kickers[order(kickers$rank),]
 
 #View Rankings
 kickers
 
 #Save file
+<<<<<<< HEAD
 save(kickers, file = paste(getwd(),"/Data/kickers_", league, ".RData", sep=""))
 write.csv(kickers, file=paste(getwd(),"/Data/kickers_", league, ".csv", sep=""), row.names=FALSE)
 
 save(kickers, file = paste(getwd(),"/Data/Historical Rankings/kickers_", league, "-2014.RData", sep=""))
 write.csv(kickers, file=paste(getwd(),"/Data/Historical Rankings/kickers_", league, "-2014.csv", sep=""), row.names=FALSE)
+=======
+save(kickers, file = paste(getwd(), "/Data/kickers.RData", sep=""))
+write.csv(kickers, file=paste(getwd(), "/Data/kickers.csv", sep=""), row.names=FALSE)
+
+save(kickers, file = paste(getwd(), "/Data/Historical Rankings/kickers-", season, ".RData", sep=""))
+write.csv(kickers, file=paste(getwd(), "/Data/Historical Rankings/kickers-", season, ".csv", sep=""), row.names=FALSE)
+>>>>>>> upstream/master

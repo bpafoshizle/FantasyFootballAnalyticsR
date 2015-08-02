@@ -89,12 +89,17 @@ if(length(which(projections_fp$name_fp == "")) > 0){
 projections_fp[projections_fp$name %in% projections_fp[duplicated(projections_fp$name),"name"],]
 
 #Same name, different player
+<<<<<<< HEAD
 #projections_fp <- projections_fp[-which(projections_fp$name=="ZACHMILLER" & projections_fp$team_fp=="CHI"),]
+=======
+projections_fp <- projections_fp[-which(projections_fp$name=="ALEXSMITH" & projections_fp$team_fp=="CIN"),]
+projections_fp <- projections_fp[-which(projections_fp$name=="RYANGRIFFIN" & projections_fp$team_fp=="HOU"),]
+>>>>>>> upstream/master
 
 #Same player, different position
-dropNames <- c("DEXTERMCCLUSTER")
-dropVariables <- c("pos")
-dropLabels <- c("WR")
+dropNames <- c("DEXTERMCCLUSTER","DENARDROBINSON","JAMESCASEY","CORYHARKEY","RYANHEWITT","NILESPAUL")
+dropVariables <- c("pos","pos","pos","pos","pos","pos")
+dropLabels <- c("WR","RB","RB","RB","RB","TE")
 
 projections_fp2 <- ddply(projections_fp, .(name), numcolwise(mean), na.rm=TRUE)
 
@@ -107,8 +112,8 @@ for(i in 1:length(dropNames)){
 projections_fp <- merge(projections_fp2, projections_fp[,c("name","name_fp","player_fp","pos","team_fp")], by="name")
 
 #Rename Players
-projections_fp$name[which(projections_fp$name == "CHRISTOPHERIVORY")] <- "CHRISIVORY"
-projections_fp[projections_fp$name == "DOMANIQUEDAVIS", "name"] <- "DOMINIQUEDAVIS"
+if(length(projections_fp[projections_fp$name == "CHRISTOPHERIVORY", "name"]) > 0){projections_fp[projections_fp$name == "CHRISTOPHERIVORY", "name"] <- "CHRISIVORY"}
+if(length(projections_fp[projections_fp$name == "DOMANIQUEDAVIS", "name"]) > 0){projections_fp[projections_fp$name == "DOMANIQUEDAVIS", "name"] <- "DOMINIQUEDAVIS"}
 
 #Calculate overall rank
 projections_fp$overallRank_fp <- rank(-projections_fp$pts_fp, ties.method="min")
@@ -134,9 +139,14 @@ ggsave(paste(getwd(),"/Figures/FantasyPros projections.jpg", sep=""), width=10, 
 dev.off()
 
 #Save file
-save(projections_fp, file = paste(getwd(),"/Data/FantasyPros-Projections.RData", sep=""))
-write.csv(projections_fp, file=paste(getwd(),"/Data/FantasyPros-Projections.csv", sep=""), row.names=FALSE)
+save(projections_fp, file = paste(getwd(), "/Data/FantasyPros-Projections.RData", sep=""))
+write.csv(projections_fp, file=paste(getwd(), "/Data/FantasyPros-Projections.csv", sep=""), row.names=FALSE)
 
+<<<<<<< HEAD
 save(projections_fp, file = paste(getwd(),"/Data/Historical Projections/FantasyPros-Projections-2014.RData", sep=""))
 write.csv(projections_fp, file=paste(getwd(),"/Data/Historical Projections/FantasyPros-Projections-2014.csv", sep=""), row.names=FALSE)
 
+=======
+save(projections_fp, file = paste(getwd(), "/Data/Historical Projections/FantasyPros-Projections-", season, ".RData", sep=""))
+write.csv(projections_fp, file=paste(getwd(), "/Data/Historical Projections/FantasyPros-Projections-", season, ".csv", sep=""), row.names=FALSE)
+>>>>>>> upstream/master

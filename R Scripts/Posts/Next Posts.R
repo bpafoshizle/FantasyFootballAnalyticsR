@@ -1,13 +1,18 @@
-#WAIT FOR AVG COST
-#1. Avg Cost
+###########
+# Posts
+###########
+# 1. Re-evaluate projections
+# 2. Compare accuracy of projections and rankings in predicting final rankings
+# 3. Compare accuracy of different values for "typical replacement" players (average starter, worst starter, players drafted within first 100 picks, “man games”: http://fantasyfootballanalytics.net/2013/09/win-your-fantasy-football-snake-draft.html#comment-11470): criterion: percentage of playoff teams a certain player is on
 
-#WAIT FOR UPDATED PROJECTIONS, RE-CALCULATE PROJECTIONS
-#2. Optimum Roster
-#3. Simulation
-#4. Bid Up To
-#5. Sleepers
-#6. Re-evaluating projections
+###########
+# Apps
+###########
+# 1. Add PPR ADP: http://fantasyfootballcalculator.com/adp_csv.php?format=ppr&teams=12
+# 2. Weekly projections
+# 3. Trade Analyzer
 
-#Other sources of projections:
-http://msn.foxsports.com/fantasy/football/commissioner/Research/Projections.aspx
-http://www.fftoolbox.com/football/2014/cheatsheets.cfm
+###########
+# Other sources of projections
+###########
+# 1. http://pickingpros.com/nfl/overall-fantasy-projections.php
