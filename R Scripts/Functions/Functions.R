@@ -33,11 +33,7 @@ convert.magic <- function(obj, type){
 
 #Convert to name for merging by removing all spaces and punctuation and converting to all caps
 nameMerge <- function(name){
-<<<<<<< HEAD
-  newName <- toupper(gsub("Sr", "", gsub("Jr", "", gsub("III", "", gsub("[[:punct:]]", "", gsub("\\s", "", name))))))
-=======
   newName <- toupper(gsub("Sr|Jr|III|[[:punct:]]| ", "", name))
->>>>>>> upstream/master
   return(newName)
 }
 
@@ -314,7 +310,6 @@ convertTeamAbbreviation <- function(x){
   return(x)
 }
 
-<<<<<<< HEAD
 picksBetweenNext <- function(lastPick, pickList){
   nextPick = nextDraftPick(lastPick, pickList)
   
@@ -363,7 +358,7 @@ isnull <- function(x, r, caller){
     x
   }
 }
-=======
+
 #Convert team abbreviations to cities/nicknames
 convertTeamName <- function(x){
   x[which(toupper(x) == "ARI")] <- "Arizona Cardinals"
@@ -470,4 +465,3 @@ dstPts <- function(ptsAllow, brackets){
   }
   return(as.numeric(pts))
 }
->>>>>>> upstream/master

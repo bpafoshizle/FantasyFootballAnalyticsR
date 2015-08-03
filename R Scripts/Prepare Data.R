@@ -20,22 +20,23 @@ source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=
 # Projections
 ###############
 
-source(paste(getwd(),"/R Scripts/Projections/Accuscore Projections.R", sep=""), echo=TRUE)
-source(paste(getwd(),"/R Scripts/Projections/CBS1 Projections.R", sep=""), echo=TRUE)
-source(paste(getwd(),"/R Scripts/Projections/CBS2 Projections.R", sep=""), echo=TRUE)
-source(paste(getwd(),"/R Scripts/Projections/ESPN Projections.R", sep=""), echo=TRUE)
+#source(paste(getwd(),"/R Scripts/Projections/Accuscore Projections.R", sep=""), echo=TRUE) #Paywalled
+#source(paste(getwd(),"/R Scripts/Projections/CBS1 Projections.R", sep=""), echo=TRUE) # Old, now just uses CBS
+#source(paste(getwd(),"/R Scripts/Projections/CBS2 Projections.R", sep=""), echo=TRUE) # Old, now just uses CBS
 #source(paste(getwd(),"/R Scripts/Projections/FantasyFootballNerd Projections.R", sep=""), echo=TRUE) #Paywalled
-source(paste(getwd(),"/R Scripts/Projections/FantasyPros Projections.R", sep=""), echo=TRUE)
-source(paste(getwd(),"/R Scripts/Projections/FantasySharks Projections.R", sep=""), echo=TRUE)
-source(paste(getwd(),"/R Scripts/Projections/FFtoday Projections.R", sep=""), echo=TRUE)
 #source(paste(getwd(),"/R Scripts/Projections/Footballguys1 Projections.R", sep=""), echo=TRUE)#Paywalled
 #source(paste(getwd(),"/R Scripts/Projections/Footballguys2 Projections.R", sep=""), echo=TRUE)#Paywalled
 #source(paste(getwd(),"/R Scripts/Projections/Footballguys3 Projections.R", sep=""), echo=TRUE)#Paywalled
 #source(paste(getwd(),"/R Scripts/Projections/Footballguys4 Projections.R", sep=""), echo=TRUE)#Paywalled
+#source(paste(getwd(),"/R Scripts/Projections/WalterFootball Projections.R", sep=""), echo=TRUE) # later, he doesn't use anyway
+source(paste(getwd(),"/R Scripts/Projections/CBS Projections.R", sep=""), echo=TRUE)
+source(paste(getwd(),"/R Scripts/Projections/ESPN Projections.R", sep=""), echo=TRUE)
+source(paste(getwd(),"/R Scripts/Projections/Yahoo Projections.R", sep=""), echo=TRUE)
 source(paste(getwd(),"/R Scripts/Projections/FOX Projections.R", sep=""), echo=TRUE)
 source(paste(getwd(),"/R Scripts/Projections/NFL Projections.R", sep=""), echo=TRUE)
-#source(paste(getwd(),"/R Scripts/Projections/WalterFootball Projections.R", sep=""), echo=TRUE) # later, he doesn't use anyway
-source(paste(getwd(),"/R Scripts/Projections/Yahoo Projections.R", sep=""), echo=TRUE)
+source(paste(getwd(),"/R Scripts/Projections/FantasyPros Projections.R", sep=""), echo=TRUE)
+source(paste(getwd(),"/R Scripts/Projections/FantasySharks Projections.R", sep=""), echo=TRUE)
+source(paste(getwd(),"/R Scripts/Projections/FFtoday Projections.R", sep=""), echo=TRUE)
 
 ###############
 # Calculations

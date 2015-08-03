@@ -24,8 +24,8 @@ suffix <- "cbs"
 #Download fantasy football projections from cbssports.com
 cbs_baseurl <- "http://fantasynews.cbssports.com/fantasyfootball/stats/weeklyprojections/"
 cbs_pos <- c("QB","RB","WR","TE","K","DST")
-cbs_writers <- c("jamey_eisenberg","dave_richard")
-cbs_source <- c("cbs1", "cbs2")
+cbs_writers <- c("avg")#c("jamey_eisenberg","dave_richard")
+cbs_source <- c("cbs1")#c("cbs1", "cbs2")
 cbs_leaguetype <- "standard"
 cbs_urls <- paste0(cbs_baseurl, cbs_pos, "/season/", rep(cbs_writers, each=length(cbs_pos)), "/", cbs_leaguetype, "?&print_rows=9999")
 
@@ -123,7 +123,7 @@ dev.off()
 
 #Save file
 save(projections_cbs, file = paste0(getwd(), "/Data/CBS-Projections.RData"))
-write.csv(projections_cbs, file = paste(getwd(), "/Data/CBS-Projections.csv"), row.names=FALSE)
+write.csv(projections_cbs, file = paste0(getwd(), "/Data/CBS-Projections.csv"), row.names=FALSE)
 
 save(projections_cbs, file = paste0(getwd(), "/Data/Historical Projections/CBS-Projections-", season, ".RData"))
 write.csv(projections_cbs, file = paste0(getwd(), "/Data/Historical Projections/CBS-Projections-", season, ".csv"), row.names=FALSE)

@@ -2,5 +2,9 @@
 
 
 # Create league specific settings and specify which to run for
-league <- "Merica"
-#league <- "RZBK"
+#Season
+season <- 2015
+weekNo <- 0   # Set weekNo = 0 for seasonal projections
+
+#league <- "Merica"
+league <- "RZBK"
