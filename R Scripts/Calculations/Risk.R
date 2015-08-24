@@ -18,7 +18,7 @@ library("data.table")
 #Functions
 source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
 source(paste(getwd(),"/R Scripts/Functions/Functions.R", sep=""))
-source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=""))
+source(paste(getwd(),"/R Scripts/Functions/League Settings", ".R", sep=""))
 
 #Load data
 load(paste(getwd(),"/Data/LeagueProjections_", league, ".RData", sep=""))
@@ -32,7 +32,6 @@ experts[,player := str_sub(get("Player (team/bye)"), end=str_locate(get("Player 
 experts$name <- nameMerge(experts$player)
 
 #Rename Players
-#experts[experts$name=="DOMANIQUEDAVIS", "name"] <- "DOMINIQUEDAVIS"
 
 experts <- experts[,c("name","pick_experts","sdPick_experts"), with=FALSE]
 
@@ -40,16 +39,6 @@ experts <- experts[,c("name","pick_experts","sdPick_experts"), with=FALSE]
 wisdomOfTheCrowd[,pick_crowd := mean]
 wisdomOfTheCrowd[,sdPick_crowd := mad]
 wisdomOfTheCrowd <- wisdomOfTheCrowd[,c("name","pick_crowd","sdPick_crowd"), with=FALSE]
-
-#drafts <- readHTMLTable("http://fantasyfootballcalculator.com/adp.php?teams=10", stringsAsFactors = FALSE)$`NULL`
-#drafts$sdPick_crowd <- as.numeric(drafts$Std.Dev)
-#drafts$pick_crowd <- as.numeric(drafts$Overall)
-#drafts$name <- drafts$Name
-#drafts <- drafts[,c("name","pick_crowd","sdPick_crowd")]
-
-#Change player names
-#drafts[which(drafts$name=="Robert Griffin"),"name"] <- "Robert Griffin III"
-#drafts[which(drafts$name=="Stevie Johnson"),"name"] <- "Steve Johnson"
 
 #Merge files
 risk <- merge(experts, wisdomOfTheCrowd, by="name", all=TRUE)
@@ -87,16 +76,8 @@ ggsave(paste(getwd(),"/Figures/Risk_", league, ".jpg", sep=""), width=10, height
 dev.off()
 
 #Save file
-<<<<<<< HEAD
 save(projections, file = paste(getwd(),"/Data/Risk_", league, ".RData", sep=""))
 write.csv(projections, file=paste(getwd(),"/Data/Risk_", league, ".csv", sep=""), row.names=FALSE)
 
-save(projections, file = paste(getwd(),"/Data/Historical Files/Risk_", league, "-2014.RData", sep=""))
-write.csv(projections, file=paste(getwd(),"/Data/Historical Files/Risk_", league, "-2014.csv", sep=""), row.names=FALSE)
-=======
-save(projections, file = paste0(getwd(), "/Data/Risk.RData"))
-write.csv(projections, file = paste0(getwd(), "/Data/Risk.csv"), row.names=FALSE)
-
-save(projections, file = paste0(getwd(), "/Data/Historical Files/Risk-", season, ".RData"))
-write.csv(projections, file = paste0(getwd(), "/Data/Historical Files/Risk-", season, ".csv"), row.names=FALSE)
->>>>>>> upstream/master
+save(projections, file = paste(getwd(),"/Data/Historical Files/Risk_", league, "-", season, ".RData", sep=""))
+write.csv(projections, file=paste(getwd(),"/Data/Historical Files/Risk_", league, "-", season, ".csv", sep=""), row.names=FALSE)

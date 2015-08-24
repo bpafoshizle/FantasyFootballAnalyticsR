@@ -24,8 +24,8 @@ suffix <- "cbs"
 #Download fantasy football projections from cbssports.com
 cbs_baseurl <- "http://fantasynews.cbssports.com/fantasyfootball/stats/weeklyprojections/"
 cbs_pos <- c("QB","RB","WR","TE","K","DST")
-cbs_writers <- c("avg")#c("jamey_eisenberg","dave_richard")
-cbs_source <- c("cbs1")#c("cbs1", "cbs2")
+cbs_writers <- c("avg")
+cbs_source <- c("cbs")
 cbs_leaguetype <- "standard"
 cbs_urls <- paste0(cbs_baseurl, cbs_pos, "/season/", rep(cbs_writers, each=length(cbs_pos)), "/", cbs_leaguetype, "?&print_rows=9999")
 
@@ -90,14 +90,9 @@ projections_cbs[which(pos == "DST"), name_cbs := convertTeamName(projections_cbs
 projections_cbs[,name := nameMerge(name_cbs)]
 
 #Remove Duplicate Cases
-projections_cbs1 <- projections_cbs[which(sourceName == "cbs1")]
-projections_cbs2 <- projections_cbs[which(sourceName == "cbs2")]
-
-duplicateCases_cbs1 <- projections_cbs1[duplicated(name)]$name
-duplicateCases_cbs2 <- projections_cbs2[duplicated(name)]$name
-
-projections_cbs1[which(name %in% duplicateCases_cbs1),]
-projections_cbs2[which(name %in% duplicateCases_cbs2),]
+projections_cbs <- projections_cbs[which(sourceName == "cbs")]
+duplicateCases <- duplicated(projections_cbs$name)
+projections_cbs <- projections_cbs[!duplicateCases,]
 
 #Rename Players
 projections_cbs[name=="TIMOTHYWRIGHT", name:="TIMWRIGHT"]

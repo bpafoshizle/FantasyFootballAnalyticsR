@@ -17,24 +17,39 @@ library("data.table")
 #Functions
 source(paste(getwd(),"/R Scripts/Functions/Functions.R", sep=""))
 source(paste(getwd(),"/R Scripts/Functions/League Settings.R", sep=""))
+source(paste(getwd(),"/R Scripts/Functions/yahooLogin.R", sep=""))
+source(paste(getwd(), "/sensitive/yahooLoginInfo.R", sep=""))
 
 #Projection Info
 suffix <- "yahoo"
 
 #Download fantasy football projections from Yahoo.com
-yahoo_baseurl <- "http://football.fantasysports.yahoo.com/f1/39345/players?status=ALL&cut_type=9&myteam=0&sort=PTS&sdir=1"
+yahoo_baseurl <- paste0("http://football.fantasysports.yahoo.com/f1/", yahooLeagueId, "/players?status=ALL&cut_type=9&myteam=0&sort=PTS&sdir=1")
 yahoo_pages <- paste0("&count=", seq(0, 150, by=25))
 yahoo_pos <- list(QB="QB", RB="RB", WR="WR", TE="TE", K="K", DST="DEF")
 yahoo_urls <- paste0(yahoo_baseurl, yahoo_pages, "&pos=", rep(yahoo_pos, each=length(yahoo_pages)), "&stat1=S_PS_", season)
 
+#Login and get pages
+yahooLogin(yahooUser, yahooPass, htmlResult = "outputHTTR_LOGIN.html"
+           ,proxyUrl = "127.0.0.1"
+           ,proxyPort = 8080)
+yahoo_htmls <- lapply(yahoo_urls, yahooGetHtml)
+
+# for(h in seq_along(yahoo_htmls))
+# {
+#    write(yahoo_htmls[[h]]
+#          ,file=paste("Data/YahooRawHtml/yahoo_", h, ".html", sep = "")
+#    )
+# }
+
 #Scrape
-yahoo <- lapply(yahoo_urls, function(x) {data.table(readHTMLTable(x, stringsAsFactors = FALSE)[2]$'NULL')})
+yahoo <- lapply(yahoo_htmls, function(x) {data.table(readHTMLTable(x, stringsAsFactors = FALSE)[3]$'NULL')})
 yahooList <- yahoo
 
 #Clean data
-qbNames <- rbNames <- wrNames <- teNames <- c("star","player","add","owner","points","ownedPct","proj","actual","passYds","passTds","passInt","passAtt","rushYds","rushTds","recTgt","rec","recYds","recTds","returnTds","twoPts","fumbles","missing1")
-kNames <- c("star","player","add","owner","points","ownedPct","proj","actual","fg019","fg2029","fg3039","fg4049","fg50","fg","missing2")
-dstNames <- c("star","player","add","owner","points","ownedPct","proj","actual","dstPtsAllowed","dstSack","dstSafety","dstInt","dstFumlRec","dstDTd","dstBlk","dstRetTd","missing3")
+qbNames <- rbNames <- wrNames <- teNames <- c("star","player","add","owner","GP", "points","ownedPct","proj","actual","passYds","passTds","passInt","rushAtt","rushYds","rushTds","recTgt","rec","recYds","recTds","returnTds","twoPts","fumbles","missing1")
+kNames <- c("star","player","add","owner","GP","points","ownedPct","proj","actual","fg019","fg2029","fg3039","fg4049","fg50","fg","missing2")
+dstNames <- c("star","player","add","owner","GP","points","ownedPct","proj","actual","dstPtsAllowed","dstSack","dstSafety","dstInt","dstFumlRec","dstDTd","dstBlk","dstRetTd","missing3")
 
 #Clean data
 for(i in 1:length(yahooList)){
@@ -61,7 +76,7 @@ for(i in 1:length(yahooList)){
 }
 
 #Merge
-projections_yahoo <- rbindlist(yahoo, use.names=TRUE, fill=TRUE)
+projections_yahoo <- rbindlist(yahooList, use.names=TRUE, fill=TRUE)
 
 #Remove special characters (%, comma)
 projections_yahoo <- projections_yahoo[,lapply(.SD, function(x) gsub("\\%", "", x))]
@@ -90,30 +105,12 @@ projections_yahoo[,name := nameMerge(name_yahoo)]
 projections_yahoo <- projections_yahoo[!is.na(name),]
 
 #Remove duplicate cases
-duplicateCases <- projections_yahoo[duplicated(name)]$name
-projections_yahoo[which(name %in% duplicateCases),]
+duplicateCases <- duplicated(projections_yahoo$name)
+projections_yahoo <- projections_yahoo[!duplicateCases,]
 
 #Same name, different player
-#projections_yahoo <- projections_yahoo[-which(name == "ALEXSMITH" & team_yahoo == "CIN"),]
-#projections_yahoo <- projections_yahoo[-which(name == "RYANGRIFFIN" & team_yahoo == "NO"),]
 
-#Same player, different position
-#dropNames <- c("DEXTERMCCLUSTER","DENARDROBINSON","DRIARCHER","MARQUEISGRAY","JORDANLYNCH")
-#dropVariables <- c("pos","pos","pos","pos","pos")
-#dropLabels <- c("WR","RB","RB","TE","RB")
-
-#projections_yahoo2 <- setDT(ddply(projections_yahoo, .(name), numcolwise(mean), na.rm=TRUE))
-
-#for(i in 1:length(dropNames)){
-#  if(dim(projections_yahoo[-which(name == dropNames[i] & projections_yahoo[,dropVariables[i], with=FALSE] == dropLabels[i]),])[1] > 0){
-#    projections_yahoo <- projections_yahoo[-which(name == dropNames[i] & projections_yahoo[,dropVariables[i], with=FALSE] == dropLabels[i]),]
-#  }
-#}
-
-#setkeyv(projections_yahoo2, cols="name")
-#setkeyv(projections_yahoo, cols="name")
-
-#projections_yahoo <- merge(projections_yahoo2, projections_yahoo[,c("name","name_yahoo","player","pos","team_yahoo"), with=FALSE], by="name")
+#Same player, different position")
 
 #Rename players
 projections_yahoo[name == "STEVIEJOHNSON", name := "STEVEJOHNSON"]
@@ -142,7 +139,7 @@ dev.off()
 
 #Save file
 save(projections_yahoo, file = paste0(getwd(), "/Data/Yahoo-Projections.RData"))
-write.csv(projections_yahoo, file = paste(getwd(), "/Data/Yahoo-Projections.csv"), row.names=FALSE)
+write.csv(projections_yahoo, file = paste0(getwd(), "/Data/Yahoo-Projections.csv"), row.names=FALSE)
 
 save(projections_yahoo, file = paste0(getwd(), "/Data/Historical Projections/Yahoo-Projections-", season, ".RData"))
 write.csv(projections_yahoo, file = paste0(getwd(), "/Data/Historical Projections/Yahoo-Projections-", season, ".csv"), row.names=FALSE)

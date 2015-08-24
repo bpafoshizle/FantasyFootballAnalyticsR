@@ -6,8 +6,9 @@
 # Author: Barret Miller
 # Notes:
 # To do:
-# -Possibly optimize for maximum points based on risk once I understand it. See Draft Day calc
-# -Show Drop to next best player
+#  -Possibly optimize for maximum points based on risk once I understand it. See Draft Day calc
+#  -Show Drop to next best player (input tiers and show tiers graphically)
+#  -Intercept browser back and prevent or save state. Almost cost me the draft last year. 
 ###########################
 
 library(shiny)
@@ -17,15 +18,15 @@ library(dplyr)
 options(digits=2)
 
 #Functions
-source("../../../R Scripts/Functions/Global Settings.R")
-source("../../../R Scripts/Functions/Functions.R")
-source(paste("../../../R Scripts/Functions/League Settings_", league, ".R", sep=""))
+#source("../../../R Scripts/Functions/Global Settings.R")
+#source("../../../R Scripts/Functions/Functions.R")
+#source(paste("../../../R Scripts/Functions/League Settings",".R", sep=""))
 
 #Load data
 load(paste("../../../Data/VOR_", league, ".RData", sep=""))
 
 # Define server logic
-shinyServer(function(input, output) {  
+shinyServer(function(input, output) {
   
   # Set up availablePlayerControl
   output$draftedPlayerControl <- renderUI({
@@ -59,12 +60,14 @@ shinyServer(function(input, output) {
     nextPick <- nextDraftPick(lastPick, pickList)
     
     data <- projections %>% 
-              filter(!(name %in% input$drafted) & pos %in% input$pos) %>% 
+              filter(!(name %in% input$drafted) 
+                     & pos %in% input$pos
+                     & sourceName == "averageRobust") %>% 
               mutate(NxtRnd = pick>nextPick,
-                     Pts = projections,
+                     Pts = points,
                      plyr = player,
                      tm = team) %>%
-              select(plyr, pos, tm, vor, Pts, risk, NxtRnd, pick, dropOff)
+              select(plyr, pos, tm, vor, Pts, dropOffNorm)
     data
   }, options = list(iDisplayLength = 8,bFilter = FALSE))
 
@@ -75,12 +78,14 @@ shinyServer(function(input, output) {
     picksBeforeMe <- picksBetweenNext(lastPick, pickList)
     
     data <- projections %>%
-              filter(!(name %in% input$drafted) & pos %in% input$pos & risk < 5) %>% 
+              filter(!(name %in% input$drafted) 
+                     & pos %in% input$pos & risk < 5 
+                     & sourceName == "averageRobust") %>%
               mutate(NxtRnd = pick>nextPick,
-                     Pts = projections,
+                     Pts = points,
                      plyr = player,
                      tm = team) %>%
-              select(plyr, pos, tm, vor, Pts, risk, NxtRnd, pick, dropOff)
+               select(plyr, pos, tm, vor, Pts, dropOffNorm)
     data
   }, options = list(iDisplayLength = 8,bFilter = FALSE))
 
@@ -91,13 +96,14 @@ shinyServer(function(input, output) {
     picksBeforeMe <- picksBetweenNext(lastPick, pickList)
     
     data <- projections %>%
-              filter(!(name %in% input$drafted) & pos %in% input$pos & risk >= 5) %>% 
+              filter(!(name %in% input$drafted) & pos %in% input$pos & risk >= 5
+                     & sourceName == "averageRobust") %>%
               mutate(NxtRnd = pick<nextPick,
-                     Pts = projections,
+                     Pts = points,
                      plyr = player,
                      tm = team,
                      UpsdPts = Pts + sdPts) %>%
-              select(plyr, pos, tm, UpsdPts, vor, Pts, risk, NxtRnd, pick, dropOff) %>%
+              select(plyr, pos, tm, vor, Pts, dropOffNorm) %>%
               arrange(desc(UpsdPts))
     data
   }, options = list(iDisplayLength = 8,bFilter = FALSE))

@@ -14,7 +14,7 @@ library(ggplot2)
 #Functions
 source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
 source(paste(getwd(),"/R Scripts/Functions/Functions.R", sep=""))
-source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=""))
+source(paste(getwd(),"/R Scripts/Functions/League Settings",".R", sep=""))
 
 #Type of drafts to scrape
 num.teams <- numTeams #Number of teams in your league
@@ -162,17 +162,8 @@ value.plot
 dev.off()
 
 #Save file
-<<<<<<< HEAD
 save(wisdomOfTheCrowd, file = paste(getwd(),"/Data/wisdomOfTheCrowd_", league, ".RData", sep=""))
 write.csv(wisdomOfTheCrowd, file=paste(getwd(),"/Data/wisdomOfTheCrowd_", league, ".csv", sep=""), row.names=FALSE)
 
-save(wisdomOfTheCrowd, file = paste(getwd(),"/Data/Historical Files/wisdomOfTheCrowd_", league, "-2014.RData", sep=""))
-write.csv(wisdomOfTheCrowd, file=paste(getwd(),"/Data/Historical Files/wisdomOfTheCrowd_", league, "-2014.csv", sep=""), row.names=FALSE)
-
-=======
-save(wisdomOfTheCrowd, file = paste(getwd(), "/Data/wisdomOfTheCrowd.RData", sep=""))
-write.csv(wisdomOfTheCrowd, file=paste(getwd(), "/Data/wisdomOfTheCrowd.csv", sep=""), row.names=FALSE)
-
-save(wisdomOfTheCrowd, file = paste(getwd(), "/Data/Historical Files/wisdomOfTheCrowd-", season, ".RData", sep=""))
-write.csv(wisdomOfTheCrowd, file=paste(getwd(), "/Data/Historical Files/wisdomOfTheCrowd-", season, ".csv", sep=""), row.names=FALSE)
->>>>>>> upstream/master
+save(wisdomOfTheCrowd, file = paste(getwd(),"/Data/Historical Files/wisdomOfTheCrowd_", league, "-", season, ".RData", sep=""))
+write.csv(wisdomOfTheCrowd, file=paste(getwd(),"/Data/Historical Files/wisdomOfTheCrowd_", league, "-", season, ".csv", sep=""), row.names=FALSE)

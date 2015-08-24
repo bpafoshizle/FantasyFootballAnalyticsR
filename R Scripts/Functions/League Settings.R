@@ -6,6 +6,5 @@
 # Notes:
 # To do:
 ###########################
-
 source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
 source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=""))

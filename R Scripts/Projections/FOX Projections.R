@@ -12,6 +12,7 @@ library("XML")
 library("stringr")
 library("ggplot2")
 library("plyr")
+library("data.table")
 
 #Functions
 source(paste(getwd(),"/R Scripts/Functions/Functions.R", sep=""))
@@ -21,10 +22,10 @@ source(paste(getwd(),"/R Scripts/Functions/League Settings.R", sep=""))
 suffix <- "fox"
 
 #Variable names
-qbNames_fox <- c("player_fox","status_fox","passTds_fox","passYds_fox","passInt_fox","rushTds_fox","rushYds_fox","twoPts_fox","fumlRecTds_fox","fumbles_fox","pts_fox") #,"passSack_fox","rushAtt_fox"
-rbNames_fox <- c("player_fox","status_fox","rushTds_fox","rushYds_fox","recTds_fox","recYds_fox","twoPts_fox","fumlRecTds_fox","fumbles_fox","pts_fox")
-wrNames_fox <- c("player_fox","status_fox","recTds_fox","recYds_fox","rushTds_fox","rushYds_fox","twoPts_fox","fumlRecTds_fox","fumbles_fox","pts_fox") #c("player_fox","status_fox","recTds_fox","recYds_fox","rec_fox","rushTds_fox","rushYds_fox","rushAtt_fox","puntReturnTds_fox","puntReturnYds_fox","kickReturnTds_fox","kickReturnYds_fox","twoPts_fox","fumlRecTds_fox","fumbles_fox","pts_fox")
-teNames_fox <- c("player_fox","status_fox","recTds_fox","recYds_fox","rushTds_fox","rushYds_fox","twoPts_fox","fumlRecTds_fox","fumbles_fox","pts_fox") #,"fumlRecTds_fox","fumbles_fox"
+qbNames_fox <- c("player","status","passTds","passYds","passAtt","passComp", "passInt","rushTds","rushYds", "rushAtt", "twoPts","fumlRecTds","fumbles","points")
+rbNames_fox <- c("player","status","rushTds","rushYds","rushAtt","recTds","recYds","rec","twoPts","fumlRecTds","fumbles","points")
+wrNames_fox <- c("player","status","recTds","recYds","rec","rushTds","rushYds","rushAtt","twoPts","fumlRecTds","fumbles","points") 
+teNames_fox <- c("player","status","recTds","recYds","rec","rushTds","rushYds","rushAtt","twoPts","fumlRecTds","fumbles","points")
 
 #Download fantasy football projections from FOX Sports
 qb1_fox <- qb2_fox <- rb1_fox <- rb2_fox <- rb3_fox <- rb4_fox <- wr1_fox <- wr2_fox <- wr3_fox <- wr4_fox <- wr5_fox <- wr6_fox <- te1_fox <- te2_fox <- matrix()
@@ -104,29 +105,31 @@ wr_fox$pos <- as.factor("WR")
 te_fox$pos <- as.factor("TE")
 
 #Merge across positions
-projections_fox <- rbind.fill(qb_fox,rb_fox,wr_fox,te_fox)
+projections_fox <- data.table(rbind.fill(qb_fox,rb_fox,wr_fox,te_fox))
+
 
 #Add missing variables
-projections_fox$passAtt_fox <- NA
-projections_fox$passComp_fox <- NA
-projections_fox$rushAtt_fox <- NA
-projections_fox$rec_fox <- NA
-projections_fox$returnTds_fox <- NA
+#projections_fox$passAtt_fox <- NA
+#projections_fox$passComp_fox <- NA
+#projections_fox$rushAtt_fox <- NA
+#projections_fox$rec_fox <- NA
+projections_fox$returnTds <- NA
 
 #Convert variables from character strings to numeric
-projections_fox[,c("passAtt_fox","passComp_fox","passTds_fox","passYds_fox","passInt_fox","rushAtt_fox","rushTds_fox","rushYds_fox","twoPts_fox","fumlRecTds_fox","fumbles_fox","pts_fox","recTds_fox","recYds_fox","rec_fox","returnTds_fox")] <- 
-  convert.magic(projections_fox[,c("passAtt_fox","passComp_fox","passTds_fox","passYds_fox","passInt_fox","rushAtt_fox","rushTds_fox","rushYds_fox","twoPts_fox","fumlRecTds_fox","fumbles_fox","pts_fox","recTds_fox","recYds_fox","rec_fox","returnTds_fox")], "numeric")
+#projections_fox[,c("passAtt","passComp","passTds","passYds","passInt","rushAtt","rushTds","rushYds","twoPts","fumlRecTds","fumbles","pts","recTds","recYds","rec","returnTds")] <- 
+#  convert.magic(projections_fox[,c("passAtt","passComp","passTds","passYds","passInt","rushAtt","rushTds","rushYds","twoPts","fumlRecTds","fumbles","pts","recTds","recYds","rec","returnTds")], "numeric")
+numericVars <- names(projections_fox)[names(projections_fox) %in% c(scoreCategories)]
+projections_fox[, (numericVars) := lapply(.SD, function(x) as.numeric(as.character(x))), .SDcols = numericVars]
 
 #Player name and team
-projections_fox$name_fox <- str_trim(sapply(str_split(projections_fox$player_fox, "\r\n"), "[", 1))
+projections_fox$name_fox <- str_trim(sapply(str_split(projections_fox$player, "\r\n"), "[", 1))
 projections_fox$name <- nameMerge(projections_fox$name_fox)
-projections_fox$team_fox <- toupper(str_trim(str_sub(projections_fox$player_fox, start=str_locate(projections_fox$player_fox, "\\(")[,1]+1, end=str_locate(projections_fox$player_fox, "\\)")[,1]-6)))
+projections_fox$team_fox <- toupper(str_trim(str_sub(projections_fox$player, start=str_locate(projections_fox$player, "\\(")[,1]+1, end=str_locate(projections_fox$player, "\\)")[,1]-6)))
 
 #Remove duplicate cases
 projections_fox[projections_fox$name %in% projections_fox[duplicated(projections_fox$name),"name"],]
 
 #Same name, different player
-projections_fox <- projections_fox[-which(projections_fox$name=="RYANGRIFFIN" & projections_fox$pos=="QB"),]
 
 #Same player, different position
 
@@ -134,24 +137,32 @@ projections_fox <- projections_fox[-which(projections_fox$name=="RYANGRIFFIN" & 
 projections_fox[projections_fox$name=="STEVIEJOHNSON", "name"] <- "STEVEJOHNSON"
 
 #Calculate overall rank
-projections_fox$overallRank_fox <- rank(-projections_fox$pts_fox, ties.method="min")
+projections_fox$overallRank <- rank(-projections_fox$points, ties.method="min")
 
 #Calculate Position Rank
-projections_fox$positionRank_fox <- NA
-projections_fox[which(projections_fox$pos == "QB"), "positionRank_fox"] <- rank(-projections_fox[which(projections_fox$pos == "QB"), "pts_fox"], ties.method="min")
-projections_fox[which(projections_fox$pos == "RB"), "positionRank_fox"] <- rank(-projections_fox[which(projections_fox$pos == "RB"), "pts_fox"], ties.method="min")
-projections_fox[which(projections_fox$pos == "WR"), "positionRank_fox"] <- rank(-projections_fox[which(projections_fox$pos == "WR"), "pts_fox"], ties.method="min")
-projections_fox[which(projections_fox$pos == "TE"), "positionRank_fox"] <- rank(-projections_fox[which(projections_fox$pos == "TE"), "pts_fox"], ties.method="min")
+projections_fox[which(projections_fox$pos == "QB"), "positionRank"] <- rank(-projections_fox[which(projections_fox$pos == "QB"), points], ties.method="min")
+projections_fox[which(projections_fox$pos == "RB"), "positionRank"] <- rank(-projections_fox[which(projections_fox$pos == "RB"), points], ties.method="min")
+projections_fox[which(projections_fox$pos == "WR"), "positionRank"] <- rank(-projections_fox[which(projections_fox$pos == "WR"), points], ties.method="min")
+projections_fox[which(projections_fox$pos == "TE"), "positionRank"] <- rank(-projections_fox[which(projections_fox$pos == "TE"), points], ties.method="min")
+
+#Add source
+projections_fox$sourceName <- suffix
+
+#Remove duplicate cases
+duplicateCases <- duplicated(projections_fox$name)
+projections_fox <- projections_fox[!duplicateCases,]
 
 #Order variables in data set
-projections_fox <- projections_fox[,c(prefix, paste(varNames, suffix, sep="_"))]
+allVars <- c(prefix, paste(sourceSpecific, suffix, sep="_"), varNames)
+keepVars <- allVars[allVars %in% names(projections_fox)]
+projections_fox <- projections_fox[,keepVars, with=FALSE]
 
 #Order players by overall rank
-projections_fox <- projections_fox[order(projections_fox$overallRank_fox),]
+projections_fox <- projections_fox[order(projections_fox$overallRank),]
 row.names(projections_fox) <- 1:dim(projections_fox)[1]
 
 #Density Plot
-ggplot(projections_fox, aes(x=pts_fox)) + geom_density(fill="blue", alpha=.3) + xlab("Player's Projected Points") + ggtitle("Density Plot of FOX Projected Points")
+ggplot(projections_fox, aes(x=points)) + geom_density(fill="blue", alpha=.3) + xlab("Player's Projected Points") + ggtitle("Density Plot of FOX Projected Points")
 ggsave(paste(getwd(),"/Figures/FOX projections.jpg", sep=""), width=10, height=10)
 dev.off()
 

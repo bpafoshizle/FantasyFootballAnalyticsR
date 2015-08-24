@@ -36,8 +36,8 @@ scoreCategories <- c("passAtt","passComp","passIncomp","passYds","passTds","pass
                      "returnTds","twoPts","fumbles",
                      "idpSolo","idpAst","idpSack","idpFumlRec","idpFumlForce","idpInt","idpPD",
                      "dstPtsAllow","dstYdsAllowed","dstSack","dstSafety","dstInt","dstFumlRec","dstFumlForce","dstBlk","dstTd",
-                     "fg","fgAtt","fg0019","fg2029","fg3039","fg4049","fg50","xp")
-calculatedVars <- c("positionRank","overallRank","points","pointsLo","pointsHi","vor","pick","risk","sdPts","sdPick")
+                     "fg","fgAtt","fg0019","fg2029","fg3039","fg4049","fg50","xp", "points")
+calculatedVars <- c("positionRank","overallRank","calcPoints","pointsLo","pointsHi","vor","pick","risk","sdPts","sdPick", "dropOffNorm")
 varNames <- c(calculatedVars, scoreCategories)
 finalVarNames <- c("name","pos","team","sourceName","player","playerID","season", "playerId", "analystId", varNames)
 
@@ -81,27 +81,15 @@ scoringRules <- list(
 
 
 #Projections
-sourcesOfProjections <- c("Accuscore", "CBS1", "CBS2", "EDSfootball", "ESPN", "FantasyFootballNerd", "FantasyPros", "FantasySharks", "FFtoday", "Footballguys1", "Footballguys2", "Footballguys3", "Footballguys4", "FOX", "NFL", "numberFire", "WalterFootball", "Yahoo")
-sourcesOfProjectionsAbbreviation <- c("accu", "cbs1", "cbs2", "eds", "espn", "ffn", "fp", "fs", "fftoday", "fbg1", "fbg2", "fbg3", "fbg4", "fox", "nfl", "nf", "wf", "yahoo")
+sourcesOfProjections <- c("CBS", "ESPN", "FantasyPros",  "FOX", "NFL", "Yahoo")
+sourcesOfProjectionsAbbreviation <- c("cbs", "espn", "fp", "fox", "nfl", "yahoo")
 
 #Weights applied to each source in calculation of weighted average of projections
-weight_accu <- 1    #Accuscore
-weight_cbs1 <- 1    #Jamey Eisenberg
-weight_cbs2 <- 1    #Dave Richard"
-weight_eds <- 1     #EDS Football
+weight_cbs <- 1    #Jamey Eisenberg
 weight_espn <- 1    #ESPN
-weight_ffn <- 1     #Fantasy Football Nerd
-weight_fbg1 <- 1    #Footballguys: David Dodds
-weight_fbg2 <- 1    #Footballguys: Bob Henry
-weight_fbg3 <- 1    #Footballguys: Maurile Tremblay
-weight_fbg4 <- 1    #Footballguys: Jason Wood
 weight_fox <- 1    #FOX
 weight_fp <- 1      #FantasyPros
-weight_fs <- 1      #FantasySharks
-weight_fftoday <- 1 #FFtoday
 weight_nfl <- 1     #NFL.com
-weight_nf <- 1      #numberFire
-weight_wf <- 1      #WalterFootball
 weight_yahoo <- 1   #Yahoo 
 
 sourceWeights <- c(
@@ -110,9 +98,6 @@ sourceWeights <- c(
   "Yahoo Sports"      = 1, 
   "ESPN"              = 1, 
   "NFL"               = 1, 
-  "FOX Sports"        = 1, 
-  "FFtoday"           = 1,
-  "NumberFire"        = 1, 
   "FantasyPros"       = 1,
   "Dodds-Norton"      = 1, 
   "Dodds"             = 1, 
@@ -123,13 +108,6 @@ sourceWeights <- c(
   "Bloom"             = 1
   ) 
 
-
-#Number of players at each position drafted in Top 100 (adjust for your league)
-#qbReplacements <- 15
-#rbReplacements <- 37
-#wrReplacements <- 36
-#teReplacements <- 11
-
 # Calculate the replacement position based on method from "Fantasy Football for Smart People"
 # Uses S(N) where is is number of starters at the position and N is number of managers/teams
 qbReplacements <- numQBstarters*numTeams
@@ -137,14 +115,3 @@ rbReplacements <- numRBstarters*numTeams
 wrReplacements <- numWRstarters*numTeams
 teReplacements <- numTEstarters*numTeams
 
-#Alternative way of calculating the number of players at each position drafted in Top 100 based on league settings
-#numTeams <- 10  #number of teams in league
-#numQB <- 1      #number of avg QBs in starting lineup
-#numRB <- 2.5    #number of avg RBs in starting lineup
-#numWR <- 2.5    #number of avg WRs in starting lineup
-#numTE <- 1      #number of avg TEs in starting lineup
-
-#qbReplacements <- print(ceiling(numQB*numTeams*1.7))
-#rbReplacements <- print(ceiling(numRB*numTeams*1.4))
-#wrReplacements <- print(ceiling(numWR*numTeams*1.4))
-#teReplacements <- print(ceiling(numTE*numTeams*1.3))

@@ -14,18 +14,24 @@ library(ggplot2)
 #Functions
 source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
 source(paste(getwd(),"/R Scripts/Functions/Functions.R", sep=""))
-source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=""))
+source(paste(getwd(),"/R Scripts/Functions/League Settings",".R", sep=""))
 
 #Load data
-load(paste(getwd(),"/Data/Risk_", league, ".RData", sep=""))
+load(paste(getwd(),"/Data/LeagueProjections_", league, ".RData", sep=""))
+projections$risk <- NA
+projections$pick <- NA
+projections$sdPick <- NA
+projections$sdPts <- NA
+#load(paste(getwd(),"/Data/Risk_", league, ".RData", sep=""))
 
 #Calculate Value over Replacement
 projectionsRobustAvg <- projections[which(sourceName == "averageRobust"),]
-
 qbValueOfReplacement <- mean(c(projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "QB" & projectionsRobustAvg$positionRank == qbReplacements)], projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "QB" & projectionsRobustAvg$positionRank == qbReplacements-1)], projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "QB" & projectionsRobustAvg$positionRank == qbReplacements+1)]))
 rbValueOfReplacement <- mean(c(projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "RB" & projectionsRobustAvg$positionRank == rbReplacements)], projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "RB" & projectionsRobustAvg$positionRank == rbReplacements-1)], projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "RB" & projectionsRobustAvg$positionRank == rbReplacements+1)]))
 wrValueOfReplacement <- mean(c(projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "WR" & projectionsRobustAvg$positionRank == wrReplacements)], projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "WR" & projectionsRobustAvg$positionRank == wrReplacements-1)], projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "WR" & projectionsRobustAvg$positionRank == wrReplacements+1)]))
 teValueOfReplacement <- mean(c(projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "TE" & projectionsRobustAvg$positionRank == teReplacements)], projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "TE" & projectionsRobustAvg$positionRank == teReplacements-1)], projectionsRobustAvg$points[which(projectionsRobustAvg$pos == "TE" & projectionsRobustAvg$positionRank == teReplacements+1)]))
+
+
 
 projections[which(pos == "QB"), vor := points - qbValueOfReplacement]
 projections[which(pos == "RB"), vor := points - rbValueOfReplacement]
@@ -36,41 +42,34 @@ projections[which(pos == "TE"), vor := points - teValueOfReplacement]
 projections <- projections[order(-vor)][,overallRank := 1:.N, by=list(sourceName)]
 projections <- projections[order(-vor)][,positionRank := 1:.N, by=list(sourceName, pos)]
 
-<<<<<<< HEAD
 # Calculate drop off as each player's projected points minus the average of the next two players
 # at the same potision
-qb <- qb %>% 
-  arrange(-projections) %>%
+projections <- projections %>% 
+  group_by(sourceName, pos) %>%
+  #filter(sourceName=="averageRobust", pos=="QB") %>%
+  arrange(-points) %>%
   mutate(#nextBestProj = lead(projections),
          #secNextBestProj = lead(projections, 2),
-         nextBestAvg = (lead(projections) + lead(projections, 2))/2,
-         dropOff = projections - ((lead(projections) + lead(projections, 2))/2)
+         nextBestAvg = (lead(points) + lead(points, 2))/2,
+         dropOff = points - ((lead(points) + lead(points, 2))/2)
   )
-rb <- rb %>% 
-  arrange(-projections) %>%
-  mutate(#nextBestProj = lead(projections),
-    #secNextBestProj = lead(projections, 2),
-    nextBestAvg = (lead(projections) + lead(projections, 2))/2,
-    dropOff = projections - ((lead(projections) + lead(projections, 2))/2)
-  )
-wr <- wr %>% 
-  arrange(-projections) %>%
-  mutate(#nextBestProj = lead(projections),
-    #secNextBestProj = lead(projections, 2),
-    nextBestAvg = (lead(projections) + lead(projections, 2))/2,
-    dropOff = projections - ((lead(projections) + lead(projections, 2))/2)
-  )
-te <- te %>% 
-  arrange(-projections) %>%
-  mutate(#nextBestProj = lead(projections),
-    #secNextBestProj = lead(projections, 2),
-    nextBestAvg = (lead(projections) + lead(projections, 2))/2,
-    dropOff = projections - ((lead(projections) + lead(projections, 2))/2)
-  )
-  
-#Merge across positions
-projections <- rbind(qb,rb,wr,te)
 
+#Calculate the average and sd of dropoffs
+projections[, c("meanDropoff", "sdDropoff") := 
+               list(mean(dropOff, na.rm = T), sd(dropOff, na.rm=T))
+            ,by=.(sourceName, pos)]
+
+#Normalize dropoff in terms of standard deviations from the mean
+projections[, c("meanDropoff", "sdDropoff") := 
+               list(mean(dropOff, na.rm = T), sd(dropOff, na.rm=T))
+            ,by=.(sourceName, pos)]
+projections[, dropOffNorm := abs(dropOff-meanDropoff)/sdDropoff]
+
+#Calculate tiers based on dropoff deviation from average dropoff
+# for(i in 1:nrow(projections)){
+#    
+# }
+  
 #Calculate overall rank by VOR
 projections$overallRank <- rank(-projections$vor, ties.method="min")
 
@@ -78,13 +77,9 @@ projections$overallRank <- rank(-projections$vor, ties.method="min")
 projections <- projections[order(projections$overallRank),]
 row.names(projections) <- 1:dim(projections)[1]
 
-#Reorder variables
-projections <- projections[,c("name","player","pos","team","overallRank","pick","positionRank","projections",paste("projectedPts", sourcesOfProjectionsAbbreviation, sep="_"),"projectedPtsMean","projectedPtsMedian","vor","sdPick","sdPts","risk","nextBestAvg","dropOff")] #,"projectedPtsLatent"
-=======
 #Select and order variables
 keepVars <- finalVarNames[finalVarNames %in% names(projections)]
 projections <- projections[,keepVars, with=FALSE]
->>>>>>> upstream/master
 
 #Starters (low risk)
 projections[which(projections$risk <= 5 & projections$vor >= 0),]
@@ -99,7 +94,7 @@ dev.off()
 
 #Boxplot
 qplot(pos, vor, data=projections[which(projections$vor >= 0),], geom=c("boxplot", "jitter"), fill=pos, main="Value Over Replacement By Position", xlab="", ylab="Value Over Replacement")
-<<<<<<< HEAD
+
 ggsave(paste(getwd(),"/Figures/VOR-Boxplot_",league, ".jpg", sep=""), width=10, height=10)
 dev.off()
 
@@ -107,22 +102,11 @@ dev.off()
 save(projections, file = paste(getwd(),"/Data/VOR_", league, ".RData", sep=""))
 write.csv(projections, file=paste(getwd(),"/Data/VOR_", league, ".csv", sep=""), row.names=FALSE)
 
-save(projections, file = paste(getwd(),"/Data/Historical Files/VOR_", league, "-2014.RData", sep=""))
-write.csv(projections, file=paste(getwd(),"/Data/Historical Files/VOR_", league, "-2014.csv", sep=""), row.names=FALSE)
-=======
-ggsave(paste0(getwd(), "/Figures/VOR-Boxplot.jpg"), width=10, height=10)
-dev.off()
-
-#Save file
-save(projections, file = paste0(getwd(), "/Data/VOR.RData"))
-write.csv(projections, file = paste0(getwd(), "/Data/VOR.csv"), row.names=FALSE)
-
-save(projections, file = paste0(getwd(), "/Data/Historical Files/VOR-", season, ".RData"))
-write.csv(projections, file = paste0(getwd(), "/Data/Historical Files/VOR-", season, ".csv"), row.names=FALSE)
->>>>>>> upstream/master
+save(projections, file = paste(getwd(),"/Data/Historical Files/VOR_", league, "-", season, ".RData", sep=""))
+write.csv(projections, file=paste(getwd(),"/Data/Historical Files/VOR_", league, "-", season, ".csv", sep=""), row.names=FALSE)
 
 #Subset data
-draftData <- projections[as.numeric(row.names(na.omit(projections[,c("points","vor","risk"), with=FALSE]))), c("name","pos","team","points","vor","sdPick","sdPts","risk"), with=FALSE] #projectedPtsLatent
+draftData <- projections[as.numeric(row.names(na.omit(projections[,c("points","vor"), with=FALSE]))), c("name","pos","team","points","vor","pick","sdPick","sdPts","risk","dropOffNorm"), with=FALSE]
 row.names(draftData) <- 1:dim(draftData)[1]
 
 options(digits=2)
