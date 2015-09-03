@@ -9,6 +9,7 @@
 ###########################
 
 # Libraries
+library(data.table)
 
 #Functions
 source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))

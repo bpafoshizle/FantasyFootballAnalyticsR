@@ -7,7 +7,7 @@
 # To do:
 ###########################
 
-source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
+source("~/github/local/FantasyFootballAnalyticsR/R Scripts/Functions/Global Settings.R")
 
 numTeams = 10
 numRounds = 15

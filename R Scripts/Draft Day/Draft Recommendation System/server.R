@@ -1,7 +1,7 @@
 ###########################
 # Shiny App: 
 # File: server.R
-# Description: Dominate your draft with VORP, sleepers, and starters
+# Description: Dominate your draft with VORP
 # Date: 2014-08-24
 # Author: Barret Miller
 # Notes:
@@ -11,6 +11,7 @@
 #  -Intercept browser back and prevent or save state. Almost cost me the draft last year. 
 ###########################
 
+library(data.table)
 library(shiny)
 library(dplyr)
 
@@ -18,12 +19,12 @@ library(dplyr)
 options(digits=2)
 
 #Functions
-#source("../../../R Scripts/Functions/Global Settings.R")
-#source("../../../R Scripts/Functions/Functions.R")
-#source(paste("../../../R Scripts/Functions/League Settings",".R", sep=""))
+source("~/github/local/FantasyFootballAnalyticsR/R Scripts/Functions/Global Settings.R")
+source("~/github/local/FantasyFootballAnalyticsR/R Scripts/Functions/Functions.R")
+source(paste("~/github/local/FantasyFootballAnalyticsR/R Scripts/Functions/League Settings_", league, ".R", sep=""))
 
 #Load data
-load(paste("../../../Data/Tier_", league, ".RData", sep=""))
+load(paste("~/github/local/FantasyFootballAnalyticsR/Data/Tier_", league, ".RData", sep=""))
 
 # Define server logic
 shinyServer(function(input, output) {
@@ -64,12 +65,102 @@ shinyServer(function(input, output) {
                      & pos %in% input$pos
                      & sourceName == "averageRobust") %>% 
               mutate(NxtRnd = pick>nextPick,
-                     Pts = points,
+                     pts = points,
                      plyr = player,
                      tm = team) %>%
-               arrange(desc(vor)) %>%
-              select(plyr, pos, tm, vor, Pts, pick, risk, tier)
+              arrange(desc(vor)) %>%
+              select(plyr, pos, tm, vor, pts, pick, risk, tier, NxtRnd)
     data
-  }, options = list(iDisplayLength = 25,bFilter = FALSE))
+  }, options = list(iDisplayLength = 5, bFilter = FALSE))
+  
+  
+  # Render table according to selections
+  output$wrtiers <- renderDataTable({
+     tmp <- projections %>%
+        filter(!(name %in% input$drafted)
+               & pos == "WR"
+               & sourceName == "averageRobust") %>%
+        summarise(tier = as.integer(tier))
+     minTierLeft <- min(tmp[,tier], na.rm=T)
+     
+     data <- projections %>% 
+        filter(!(name %in% input$drafted) 
+               & pos == "WR"
+               & sourceName == "averageRobust"
+               & tier == minTierLeft) %>% 
+        mutate(pts = points,
+               plyr = player,
+               tm = team) %>%
+        arrange(desc(vor)) %>%
+        select(plyr, pos, tm, tier)
+     data
+  }, options = list(iDisplayLength = 5, bFilter = FALSE))
+  
+  
+  # Render table according to selections
+  output$rbtiers <- renderDataTable({
+     tmp <- projections %>%
+        filter(!(name %in% input$drafted)
+               & pos == "RB"
+               & sourceName == "averageRobust") %>%
+        summarise(tier = as.integer(tier))
+     minTierLeft <- min(tmp[,tier], na.rm=T)
+     
+     data <- projections %>% 
+        filter(!(name %in% input$drafted) 
+               & pos == "RB"
+               & sourceName == "averageRobust"
+               & tier == minTierLeft) %>% 
+        mutate(pts = points,
+               plyr = player,
+               tm = team) %>%
+        arrange(desc(vor)) %>%
+        select(plyr, pos, tm, tier)
+     data
+  }, options = list(iDisplayLength = 5, bFilter = FALSE))
+  
+  # Render table according to selections
+  output$qbtiers <- renderDataTable({
+     tmp <- projections %>%
+        filter(!(name %in% input$drafted)
+               & pos == "QB"
+               & sourceName == "averageRobust") %>%
+        summarise(tier = as.integer(tier))
+     minTierLeft <- min(tmp[,tier], na.rm=T)
+     
+     data <- projections %>% 
+        filter(!(name %in% input$drafted) 
+               & pos == "QB"
+               & sourceName == "averageRobust"
+               & tier == minTierLeft) %>% 
+        mutate(pts = points,
+               plyr = player,
+               tm = team) %>%
+        arrange(desc(vor)) %>%
+        select(plyr, pos, tm, tier)
+     data
+  }, options = list(iDisplayLength = 5, bFilter = FALSE))
+  
+  # Render table according to selections
+  output$tetiers <- renderDataTable({
+     tmp <- projections %>%
+        filter(!(name %in% input$drafted)
+               & pos == "TE"
+               & sourceName == "averageRobust") %>%
+        summarise(tier = as.integer(tier))
+     minTierLeft <- min(tmp[,tier], na.rm=T)
+     
+     data <- projections %>% 
+        filter(!(name %in% input$drafted) 
+               & pos == "TE"
+               & sourceName == "averageRobust"
+               & tier == minTierLeft) %>% 
+        mutate(pts = points,
+               plyr = player,
+               tm = team) %>%
+        arrange(desc(vor)) %>%
+        select(plyr, pos, tm, tier)
+     data
+  }, options = list(iDisplayLength = 5, bFilter = FALSE))
 
 })

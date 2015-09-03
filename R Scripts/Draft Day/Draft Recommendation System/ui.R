@@ -14,11 +14,15 @@ shinyUI(fluidPage(
     ),  
     # Show a plot of the generated distribution
     mainPanel(
-      tabsetPanel(
-        tabPanel("All Player Rankings", dataTableOutput(outputId="rankings")),
-        tabPanel("Starters", dataTableOutput(outputId="starters")),
-        tabPanel("Sleepers", dataTableOutput(outputId="sleepers"))
-      )
+        tabsetPanel(
+           tabPanel("All Player Rankings", dataTableOutput(outputId="rankings"))
+        ),
+        tabsetPanel(
+           tabPanel("RB Tiers", dataTableOutput(outputId="rbtiers")),
+           tabPanel("WR Tiers", dataTableOutput(outputId="wrtiers")),
+           tabPanel("QB Tiers", dataTableOutput(outputId="qbtiers")),
+           tabPanel("TE Tiers", dataTableOutput(outputId="tetiers"))
+        )
     )
   )
 ))
