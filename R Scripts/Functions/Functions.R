@@ -9,6 +9,8 @@
 
 #Library
 library("Rglpk")
+library(stringr)
+library(bios2mds)
 
 
 #No scientific notation
@@ -428,6 +430,45 @@ cleanTeamAbbreviations <- function(x){
   return(x)
 }
 
+# Convert city name to city and team
+#Convert team abbreviations to cities/nicknames
+convertCityToCityTeam <- function(x){
+   x[which(toupper(x) == "BUFFALO")] <- "BUFFALOBILLS"
+   x[which(toupper(x) == "SEATTLE")] <- "SEATTLESEAHAWKS"
+   x[which(toupper(x) == "HOUSTON")] <- "HOUSTONTEXANS"
+   x[which(toupper(x) == "STLOUIS")] <- "STLOUISRAMS"
+   x[which(toupper(x) == "NEWENGLAND")] <- "NEWENGLANDPATRIOTS"
+   x[which(toupper(x) == "PHILADELPHIA")] <- "PHILADELPHIAEAGLES"
+   x[which(toupper(x) == "BALTIMORE")] <- "BALTIMORERAVENS"
+   x[which(toupper(x) == "ARIZONA")] <- "ARIZONACARDINALS"
+   x[which(toupper(x) == "CAROLINA")] <- "CAROLINAPANTHERS"
+   x[which(toupper(x) == "NYJETS")] <- "NEWYORKJETS"
+   x[which(toupper(x) == "DENVER")] <- "DENVERBRONCOS"
+   x[which(toupper(x) == "CLEVELAND")] <- "CLEVELANDBROWNS"
+   x[which(toupper(x) == "GREENBAY")] <- "GREENBAYPACKERS"
+   x[which(toupper(x) == "MIAMI")] <- "MIAMIDOLPHINS"
+   x[which(toupper(x) == "SANFRANCISCO")] <- "SANFRANCISCO49ERS"
+   x[which(toupper(x) == "INDIANAPOLIS")] <- "INDIANAPOLISCOLTS"
+   x[which(toupper(x) == "TAMPABAY")] <- "TAMPABAYBUCCANEERS"
+   x[which(toupper(x) == "DETROIT")] <- "DETROITLIONS"
+   x[which(toupper(x) == "CINCINNATI")] <- "CINCINNATIBENGALS"
+   x[which(toupper(x) == "MINNESOTA")] <- "MINNESOTAVIKINGS"
+   x[which(toupper(x) == "NYGIANTS")] <- "NEWYORKGIANTS"
+   x[which(toupper(x) == "JACKSONVILLE")] <- "JACKSONVILLEJAGUARS"
+   x[which(toupper(x) == "KANSASCITY")] <- "KANSASCITYCHIEFS"
+   x[which(toupper(x) == "NEWORLEANS")] <- "NEWORLEANSSAINTS"
+   x[which(toupper(x) == "PITTSBURGH")] <- "PITTSBURGHSTEELERS"
+   x[which(toupper(x) == "DALLAS")] <- "DALLASCOWBOYS"
+   x[which(toupper(x) == "ATLANTA")] <- "ATLANTAFALCONS"
+   x[which(toupper(x) == "CHICAGO")] <- "CHICAGOBEARS"
+   x[which(toupper(x) == "SANDIEGO")] <- "SANDIEGOCHARGERS"
+   x[which(toupper(x) == "TENNESSEE")] <- "TENNESSEETITANS"
+   x[which(toupper(x) == "WASHINGTON")] <- "WASHINGTONREDSKINS"
+   x[which(toupper(x) == "OAKLAND")] <- "OAKLANDRAIDERS"
+   return(x)
+}
+
+
 #Function for adding missing rows to a data.table by cross-join
 CJ.dt = function(...) {
   rows = do.call(CJ, lapply(list(...), function(x) if(is.data.frame(x)) seq_len(nrow(x)) else seq_along(x)));
@@ -464,4 +505,66 @@ dstPts <- function(ptsAllow, brackets){
     pts <- pts * 16
   }
   return(as.numeric(pts))
+}
+
+# Function to return the player name from the fantasy pros
+# concensus picks table at the below URL. Handles  
+#http://www.fantasypros.com/nfl/rankings/consensus-cheatsheets.php
+getFpPlayerString <- function(s){
+   "Seattle Seahawks (9)"
+   p <- "(.*? .*?) .*"
+   m <- str_match(s, p)
+   return(m[,2])
+}
+
+# Function to plot the sillouette score of 2 - 13
+# clusters
+silScore <- function(df) {
+   df <- data.frame(df)
+   #preserver position rank
+   row.names(df) <- df$playerID
+   df$playerID <- NULL
+   df <- scale(df)
+   df <- df[which(complete.cases(df)), ]
+   ss <- sil.score(df)
+   plot(x = 1:13, y=ss)
+}
+
+# Function to calculate Kmeans to come up with clusters 
+# on a data frame and return a data frame. Final data frame
+# will contain the playerID and the cluster number.
+clusterPlayers <- function(df, k) {
+   df <- data.frame(df)
+   #preserver position rank
+   row.names(df) <- df$playerID
+   df$playerID <- NULL
+   df <- scale(df)
+   df <- df[which(complete.cases(df)), ]
+   clust <- Kmeans(df, centers = k, iter.max = 1000, nstart = 100)
+   playerTiers <- tierCluster(clust)
+   clustT <- data.table(matrix(playerTiers
+                                 ,length(playerTiers)
+                                 ,1
+                                 ,dimnames = list(names(playerTiers))
+                        )
+                        ,keep.rownames = T
+            )
+   setnames(clustT, c("playerID", "tier"))
+   return(clustT[, playerID := as.integer(playerID)])
+}
+
+# Function to take a cluster object, figure out cluster ranking based on total 
+# points, and renumber the clusters into tiers in ascending order from best 
+# to worst tiers
+tierCluster <- function(c) {
+   cluster <- c$cluster
+   centers <- c$centers
+   orderedClusters <- rownames(centers[order(-centers[,"points"]),])
+   clustToTierMap <- data.table(clust = orderedClusters, 
+                                tier = 1:length(orderedClusters)
+                                )
+   return(sapply(cluster
+                 ,FUN = function(x) { clustToTierMap[clust == x, tier]}
+                 )
+   )
 }

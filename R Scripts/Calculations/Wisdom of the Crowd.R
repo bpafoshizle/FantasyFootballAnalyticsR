@@ -6,9 +6,15 @@
 # Notes:
 # To do:
 ###########################
+
+#Load libraries
+library(XML)
+library(ggplot2)
+library(data.table)
 library(reshape)
 library(plyr)
-library(ggplot2)
+library(httr)
+library(stringr)
 
 
 #Functions
@@ -19,23 +25,19 @@ source(paste(getwd(),"/R Scripts/Functions/League Settings",".R", sep=""))
 #Type of drafts to scrape
 num.teams <- numTeams #Number of teams in your league
 rounds <- numRounds #Number of rounds completed, should not change (15 standard num to complete draft for 10 teams)
-num.obs <- 10000  #Number of drafts to scrape and parse
+num.obs <- 300  #Number of drafts to scrape and parse
 humans <- numTeams #Number of human drafters, in my case I want all humans
-
-#Load libraries
-library("XML")
-library("ggplot2")
-library("data.table")
-
 
 
 base.url <- "http://fantasyfootballcalculator.com/draft/"
-seed.url <- paste("http://fantasyfootballcalculator.com/completed_drafts.php?format=", leagueFormat, "&teams=",num.teams,sep="")
+
+#https://fantasyfootballcalculator.com/mockdrafts/results/format/standard/teams/12
+seed.url <- paste("https://fantasyfootballcalculator.com/mockdrafts/results/format/", leagueFormat, "/teams/",num.teams,sep="")
 
 get.seeds <- function(url, rounds, humans) {
   #Returns url ids for drafts matching num.team and rounds criteria
-  seed.drafts <- readHTMLTable(seed.url, header=TRUE, stringsAsFactors=FALSE)[[1]]
-  names(seed.drafts) <- c("DraftID", "Date", "Time(EST)", "Format", "TotalTeams", "Humans", "Rounds", "RoundsCompleted", "ViewEntireDraft")
+  seed.drafts <- readHTMLTable(content(GET(url), "text"), header=TRUE, stringsAsFactors=FALSE)[[1]]
+  names(seed.drafts) <- c("DraftID", "Date", "Time(EST)", "Format", "TotalTeams", "Humans", "RoundsCompleted", "Results")
   seed.drafts$RoundsCompleted <- as.numeric(seed.drafts$RoundsCompleted)
   seed.drafts$Humans <- as.numeric(seed.drafts$Humans)
   fit.drafts <- subset(seed.drafts, RoundsCompleted == rounds & Humans >= humans)
@@ -44,9 +46,10 @@ get.seeds <- function(url, rounds, humans) {
 }
 
 get.dates <- function(url, rounds, humans) {
+   print(url)
   #Returns url ids for drafts matching num.team and rounds criteria
-  seed.drafts <- readHTMLTable(url, header=TRUE, stringsAsFactors=FALSE)[[1]]
-  names(seed.drafts) <- c("DraftID", "Date", "Time(EST)", "Format", "TotalTeams", "Humans", "Rounds", "RoundsCompleted", "ViewEntireDraft")
+  seed.drafts <- readHTMLTable(content(GET(url), "text"), header=TRUE, stringsAsFactors=FALSE)[[1]]
+  names(seed.drafts) <- c("DraftID", "Date", "Time(EST)", "Format", "TotalTeams", "Humans", "RoundsCompleted", "Results")
   seed.drafts$RoundsCompleted <-as.numeric(seed.drafts$RoundsCompleted)
   seed.drafts$Humans <- as.numeric(seed.drafts$Humans)
   fit.drafts <- subset(seed.drafts, RoundsCompleted == rounds & Humans >= humans)
@@ -56,7 +59,9 @@ get.dates <- function(url, rounds, humans) {
 
 get.df <- function(draft.id, num.teams, rounds) {
   #Returns draft data as properly formatted data frame
-  draft.table <- readHTMLTable(paste(base.url, draft.id, sep=""), header=1:num.teams+1)$draftboard
+  draft.table <- readHTMLTable(
+                     content(GET(paste(base.url, draft.id, sep="")), "text")
+                     ,header=1:num.teams+1)$draftboard
   draft.order <- t(draft.table)
   draft.order <- draft.order[1:num.teams+1,]
   
@@ -91,21 +96,20 @@ draft.data <- lapply(first.draft, function(d) {get.df(d, num.teams, rounds)})
 
 #Build out list of data frames
 dates <- vector()
-chunk.pos <- 25
+chunk.page <- 2
 pb <- txtProgressBar(min = 0, max = num.obs, style = 3)
 
 while(length(draft.data) < num.obs) {
   setTxtProgressBar(pb, length(draft.data))
-  
-  dates <- c(dates, get.dates(paste(seed.url, "&list=", chunk.pos, sep=""), rounds, humans))
+  dates <- c(dates, get.dates(paste(seed.url, "?page=", chunk.page, sep=""), rounds, humans))
   dates <- c(dates[1], dates[length(dates)])
-  new.seeds <- get.seeds(paste(seed.url, "&list=", chunk.pos, sep=""), rounds, humans)
+  new.seeds <- get.seeds(paste(seed.url, "?page=", chunk.page, sep=""), rounds, humans)
   seed.data <- lapply(new.seeds, function(d) {get.df(d, num.teams, rounds)})
   # Add new data to full set
   for(f in seed.data) {
     draft.data[[length(draft.data) + 1]] <- f
   }
-  chunk.pos <- chunk.pos + 25  # NOTE, the final number of observations may be > num.obs, but will never be less
+  chunk.page <- chunk.page + 1  # NOTE, the final number of observations may be > num.obs, but will never be less
 }
 dates
 
@@ -127,8 +131,9 @@ drafts.stats[which(drafts.stats$mad == 0), "mad"] <- drafts.stats[which(drafts.s
 
 #Clean up
 drafts.stats$name_ffc <- gsub("[\r\n]", " ", as.character(drafts.stats$Player))
-drafts.stats$name_ffc <- gsub("DefenseD", "", drafts.stats$name_ffc)
+drafts.stats$name_ffc <- gsub("Defense", "", drafts.stats$name_ffc)
 drafts.stats$name <- nameMerge(drafts.stats$name_ffc)
+drafts.stats$name <- convertCityToCityTeam(drafts.stats$name)
 drafts.stats$pos <- as.character(drafts.stats$Position)
 drafts.stats$pos[which(drafts.stats$pos == "EF")] <- "DEF"
 drafts.stats$pos[which(drafts.stats$pos == "PK")] <- "K"
@@ -159,7 +164,7 @@ value.plot <- ggplot(subset(drafts.stats, drafts.stats$mad >= ex.mad), aes(media
 
 ggsave(paste(getwd(),"/Figures/Sleepers_", league, ".jpg", sep=""), width=10, height=6, units="in")
 value.plot
-dev.off()
+#dev.off()
 
 #Save file
 save(wisdomOfTheCrowd, file = paste(getwd(),"/Data/wisdomOfTheCrowd_", league, ".RData", sep=""))

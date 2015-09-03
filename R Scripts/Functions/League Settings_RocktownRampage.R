@@ -9,16 +9,16 @@
 
 source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
 
-numTeams = 12
+numTeams = 10
 numRounds = 15
 leagueFormat = "standard" # ppr or standard - plays into Wisdom of the Crowd
 
 #Roster
 numQBstarters <- 1
 numRBstarters <- 2
-numWRstarters <- 3
+numWRstarters <- 2
 numTEstarters <- 1
-numTotalStarters <- 8
+numTotalStarters <- 7
 numTotalPlayers <- 15
 
 
@@ -74,9 +74,9 @@ scoringRules <- list(
     K = data.frame(dataCol = c("xp", "fg", "fg0019", "fg2029", "fg3039", "fg4049", "fg50"),
                    multiplier = c(1, 3, 3, 3, 3, 4, 5)),
     DST = data.frame(dataCol = c("dstFumlRec", "dstInt", "dstSafety", "dstSack", "dstTd", "dstBlk"),
-                     multiplier = c(2, 2, 2, 1, 6, 1.5)),
-    ptsBracket = data.frame(threshold = c(0, 6, 20, 34, 99),
-                             points = c(10, 7, 4, 0, -4))
+                     multiplier = c(2, 2, 2, 1, 6, 2)),
+    ptsBracket = data.frame(threshold = c(0, 6, 13, 17, 28, 34, 45, 46),
+                             points = c(5, 4, 3, 1, 0, -1, -3, -5))
   )
 
 
@@ -110,6 +110,13 @@ sourceWeights <- c(
   "Wood"              = 1, 
   "Bloom"             = 1
   ) 
+
+
+#Number of players at each position drafted in Top 100 (adjust for your league)
+#qbReplacements <- 15
+#rbReplacements <- 37
+#wrReplacements <- 36
+#teReplacements <- 11
 
 # Calculate the replacement position based on method from "Fantasy Football for Smart People"
 # Uses S(N) where is is number of starters at the position and N is number of managers/teams

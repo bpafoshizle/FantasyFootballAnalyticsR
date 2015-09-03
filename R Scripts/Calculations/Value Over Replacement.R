@@ -18,11 +18,7 @@ source(paste(getwd(),"/R Scripts/Functions/League Settings",".R", sep=""))
 
 #Load data
 load(paste(getwd(),"/Data/LeagueProjections_", league, ".RData", sep=""))
-projections$risk <- NA
-projections$pick <- NA
-projections$sdPick <- NA
-projections$sdPts <- NA
-#load(paste(getwd(),"/Data/Risk_", league, ".RData", sep=""))
+load(paste(getwd(),"/Data/Risk_", league, ".RData", sep=""))
 
 #Calculate Value over Replacement
 projectionsRobustAvg <- projections[which(sourceName == "averageRobust"),]
@@ -71,7 +67,8 @@ projections[, dropOffNorm := abs(dropOff-meanDropoff)/sdDropoff]
 # }
   
 #Calculate overall rank by VOR
-projections$overallRank <- rank(-projections$vor, ties.method="min")
+projections[order(-points)][,overallRank := 1:.N, by=list(sourceName)]
+#projections$overallRank <- rank(-projections$vor, ties.method="min")
 
 #Order players by overall rank
 projections <- projections[order(projections$overallRank),]

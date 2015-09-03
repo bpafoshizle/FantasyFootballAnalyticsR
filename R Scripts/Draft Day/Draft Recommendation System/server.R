@@ -23,7 +23,7 @@ options(digits=2)
 #source(paste("../../../R Scripts/Functions/League Settings",".R", sep=""))
 
 #Load data
-load(paste("../../../Data/VOR_", league, ".RData", sep=""))
+load(paste("../../../Data/Tier_", league, ".RData", sep=""))
 
 # Define server logic
 shinyServer(function(input, output) {
@@ -67,45 +67,9 @@ shinyServer(function(input, output) {
                      Pts = points,
                      plyr = player,
                      tm = team) %>%
-              select(plyr, pos, tm, vor, Pts, dropOffNorm)
+               arrange(desc(vor)) %>%
+              select(plyr, pos, tm, vor, Pts, pick, risk, tier)
     data
-  }, options = list(iDisplayLength = 8,bFilter = FALSE))
-
-  output$starters <- renderDataTable({
-    lastPick <- length(input$drafted)
-    pickList <- calcPickNumbers(16, numTeams, as.numeric(input$firstPick))
-    nextPick <- nextDraftPick(lastPick, pickList)
-    picksBeforeMe <- picksBetweenNext(lastPick, pickList)
-    
-    data <- projections %>%
-              filter(!(name %in% input$drafted) 
-                     & pos %in% input$pos & risk < 5 
-                     & sourceName == "averageRobust") %>%
-              mutate(NxtRnd = pick>nextPick,
-                     Pts = points,
-                     plyr = player,
-                     tm = team) %>%
-               select(plyr, pos, tm, vor, Pts, dropOffNorm)
-    data
-  }, options = list(iDisplayLength = 8,bFilter = FALSE))
-
-  output$sleepers <- renderDataTable({
-    lastPick <- length(input$drafted)
-    pickList <- calcPickNumbers(16, numTeams, as.numeric(input$firstPick))
-    nextPick <- nextDraftPick(lastPick, pickList)
-    picksBeforeMe <- picksBetweenNext(lastPick, pickList)
-    
-    data <- projections %>%
-              filter(!(name %in% input$drafted) & pos %in% input$pos & risk >= 5
-                     & sourceName == "averageRobust") %>%
-              mutate(NxtRnd = pick<nextPick,
-                     Pts = points,
-                     plyr = player,
-                     tm = team,
-                     UpsdPts = Pts + sdPts) %>%
-              select(plyr, pos, tm, vor, Pts, dropOffNorm) %>%
-              arrange(desc(UpsdPts))
-    data
-  }, options = list(iDisplayLength = 8,bFilter = FALSE))
+  }, options = list(iDisplayLength = 25,bFilter = FALSE))
 
 })

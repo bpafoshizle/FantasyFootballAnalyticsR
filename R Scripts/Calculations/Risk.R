@@ -14,6 +14,7 @@
 library("XML")
 library("stringr")
 library("data.table")
+library("stringr")
 
 #Functions
 source(paste(getwd(), "/R Scripts/Functions/Global Settings.R", sep=""))
@@ -28,17 +29,16 @@ load(paste(getwd(),"/Data/wisdomOfTheCrowd_", league, ".RData", sep=""))
 experts <- data.table(readHTMLTable("http://www.fantasypros.com/nfl/rankings/consensus-cheatsheets.php", stringsAsFactors = FALSE)$data)
 experts[,sdPick_experts := as.numeric(get("Std Dev"))]
 experts[,pick_experts := as.numeric(Avg)]
-experts[,player := str_sub(get("Player (team/bye)"), end=str_locate(get("Player (team/bye)"), "\\(")[,1]-2)]
+experts[,player := getFpPlayerString(get("Player (team, bye)"))]
 experts$name <- nameMerge(experts$player)
 
 #Rename Players
-
 experts <- experts[,c("name","pick_experts","sdPick_experts"), with=FALSE]
 
 #Risk - Wisdom of the Crowd
 wisdomOfTheCrowd[,pick_crowd := mean]
 wisdomOfTheCrowd[,sdPick_crowd := mad]
-wisdomOfTheCrowd <- wisdomOfTheCrowd[,c("name","pick_crowd","sdPick_crowd"), with=FALSE]
+wisdomOfTheCrowd <- wisdomOfTheCrowd[freq >= .06,c("name","pick_crowd","sdPick_crowd", "freq"), with=FALSE]
 
 #Merge files
 risk <- merge(experts, wisdomOfTheCrowd, by="name", all=TRUE)
@@ -66,9 +66,6 @@ newVars <- c("pick","risk","sdPts","sdPick")
 allVars <- c(finalVarNames, newVars)
 keepVars <- finalVarNames[finalVarNames %in% names(projections)]
 projections <- projections[,keepVars, with=FALSE]
-
-#Players with highest risk levels
-projections[rank(projections$risk, na.last="keep") %in% (max(rank(projections$risk, na.last="keep"), na.rm=TRUE)-5):max(rank(projections$risk, na.last="keep"), na.rm=TRUE) ,]
 
 #Density plot
 ggplot(projections, aes(x=risk)) + geom_density(fill="red", alpha=.7) + xlab("Player's Risk Level") + ggtitle("Density Plot of Players' Risk Levels")

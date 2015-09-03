@@ -91,7 +91,6 @@ weight_fox <- 1    #FOX
 weight_fp <- 1      #FantasyPros
 weight_nfl <- 1     #NFL.com
 weight_yahoo <- 1   #Yahoo 
-
 sourceWeights <- c(
   "Jamey Eisenberg"   = 1, 
   "Dave Richard"      = 1, 
@@ -111,9 +110,28 @@ sourceWeights <- c(
   "Bloom"             = 1
   ) 
 
+
+#Number of players at each position drafted in Top 100 (adjust for your league)
+#qbReplacements <- 15
+#rbReplacements <- 37
+#wrReplacements <- 36
+#teReplacements <- 11
+
 # Calculate the replacement position based on method from "Fantasy Football for Smart People"
 # Uses S(N) where is is number of starters at the position and N is number of managers/teams
 qbReplacements <- numQBstarters*numTeams
 rbReplacements <- numRBstarters*numTeams
 wrReplacements <- numWRstarters*numTeams
 teReplacements <- numTEstarters*numTeams
+
+#Alternative way of calculating the number of players at each position drafted in Top 100 based on league settings
+#numTeams <- 10  #number of teams in league
+#numQB <- 1      #number of avg QBs in starting lineup
+#numRB <- 2.5    #number of avg RBs in starting lineup
+#numWR <- 2.5    #number of avg WRs in starting lineup
+#numTE <- 1      #number of avg TEs in starting lineup
+
+#qbReplacements <- print(ceiling(numQB*numTeams*1.7))
+#rbReplacements <- print(ceiling(numRB*numTeams*1.4))
+#wrReplacements <- print(ceiling(numWR*numTeams*1.4))
+#teReplacements <- print(ceiling(numTE*numTeams*1.3))

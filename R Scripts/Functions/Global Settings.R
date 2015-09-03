@@ -6,5 +6,7 @@
 season <- 2015
 weekNo <- 0   # Set weekNo = 0 for seasonal projections
 
-#league <- "Merica"
-league <- "RZBK"
+#league <- "RZBK"
+league <- "Merica"
+#league <- "RocktownRampage"
+#league <- "Tucker"
