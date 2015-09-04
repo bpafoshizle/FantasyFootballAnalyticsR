@@ -24,6 +24,7 @@ yahooLogin <- function(user, pw
          GET(url
              ,add_headers(.headers = headers)
              ,handle=yahoo
+             #,verbose()
          )    
       }
    
@@ -42,10 +43,10 @@ yahooLogin <- function(user, pw
          )
       }
       else{
-         #print(body)
          POST(url, body=body, encode="form"
               ,add_headers(.headers = headers)
               ,handle=yahoo
+              #,verbose()
          )
       }
    
@@ -119,9 +120,8 @@ getYahooLoginPostBody <- function(user, pw) {
 }
 
 testLogin <- function(useProxy=F, writeResult=F) {
-   user <- readline("Enter Yahoo Username:")
-   pw <- readline("Enter Yahoo password:")
-   yahooLogin(user,pw
+   source(paste(getwd(), "/sensitive/yahooLoginInfo.R", sep=""))
+   yahooLogin(yahooUser,yahooPass
               ,proxyUrl = if(useProxy) "127.0.0.1" else NULL
               ,proxyPort = if(useProxy) 8080 else NULL
               ,htmlResult= if(writeResult) "outputHTTR_LOGIN.html" else NULL

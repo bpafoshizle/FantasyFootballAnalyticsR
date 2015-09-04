@@ -31,8 +31,9 @@ yahoo_urls <- paste0(yahoo_baseurl, yahoo_pages, "&pos=", rep(yahoo_pos, each=le
 
 #Login and get pages
 yahooLogin(yahooUser, yahooPass, htmlResult = "outputHTTR_LOGIN.html"
-           ,proxyUrl = "127.0.0.1"
-           ,proxyPort = 8080)
+           #,proxyUrl = "127.0.0.1"
+           #,proxyPort = 8080
+           )
 yahoo_htmls <- lapply(yahoo_urls, yahooGetHtml)
 
 # for(h in seq_along(yahoo_htmls))
