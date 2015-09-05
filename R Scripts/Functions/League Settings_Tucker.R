@@ -9,14 +9,14 @@
 
 source("~/github/local/FantasyFootballAnalyticsR/R Scripts/Functions/Global Settings.R")
 
-numTeams = 12
+numTeams = 10
 numRounds = 15
-leagueFormat = "standard" # ppr or standard - plays into Wisdom of the Crowd
+leagueFormat = "ppr" # ppr or standard - plays into Wisdom of the Crowd
 
 #Roster
 numQBstarters <- 1
-numRBstarters <- 2
-numWRstarters <- 3
+numRBstarters <- 1
+numWRstarters <- 1
 numTEstarters <- 1
 numTotalStarters <- 8
 numTotalPlayers <- 15
@@ -51,8 +51,8 @@ passIntMultiplier <- -2     #-3 pts per passing interception
 rushAttMultiplier <- 0      #0 pts per rushing attempt
 rushYdsMultiplier <- (1/10) #1 pt per 10 rushing yds
 rushTdsMultiplier <- 6      #6 pts per rushing touchdown
-recMultiplier <- 0          #0 pts per reception
-recYdsMultiplier <- (1/10)   #1 pt per 10 receiving yds
+recMultiplier <- 1          #0 pts per reception
+recYdsMultiplier <- (1/10)  #1 pt per 10 receiving yds
 recTdsMultiplier <- 6       #6 pts per receiving touchdown
 returnTdsMultiplier <- 6    #6 pts per return touchdown
 twoPtsMultiplier <- 2       #2 pts per 2-point conversion
@@ -74,7 +74,7 @@ scoringRules <- list(
     K = data.frame(dataCol = c("xp", "fg", "fg0019", "fg2029", "fg3039", "fg4049", "fg50"),
                    multiplier = c(1, 3, 3, 3, 3, 4, 5)),
     DST = data.frame(dataCol = c("dstFumlRec", "dstInt", "dstSafety", "dstSack", "dstTd", "dstBlk"),
-                     multiplier = c(2, 2, 2, 1, 6, 1.5)),
+                     multiplier = c(2, 2, 2, 1, 6, 2)),
     ptsBracket = data.frame(threshold = c(0, 6, 20, 34, 99),
                              points = c(10, 7, 4, 0, -4))
   )

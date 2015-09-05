@@ -26,7 +26,7 @@ source(paste(getwd(),"/R Scripts/Functions/League Settings",".R", sep=""))
 num.teams <- numTeams #Number of teams in your league
 rounds <- numRounds #Number of rounds completed, should not change (15 standard num to complete draft for 10 teams)
 num.obs <- 300  #Number of drafts to scrape and parse
-humans <- numTeams #Number of human drafters, in my case I want all humans
+humans <- 8#numTeams #Number of human drafters, in my case I want all humans
 
 
 base.url <- "http://fantasyfootballcalculator.com/draft/"

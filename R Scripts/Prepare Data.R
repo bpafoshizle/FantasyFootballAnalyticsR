@@ -20,6 +20,13 @@ source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=
 # Projections
 ###############
 
+
+source(paste(getwd(),"/R Scripts/Projections/CBS Projections.R", sep=""), echo=TRUE)
+source(paste(getwd(),"/R Scripts/Projections/ESPN Projections.R", sep=""), echo=TRUE)
+source(paste(getwd(),"/R Scripts/Projections/Yahoo Projections.R", sep=""), echo=TRUE)
+source(paste(getwd(),"/R Scripts/Projections/FOX Projections.R", sep=""), echo=TRUE)
+source(paste(getwd(),"/R Scripts/Projections/NFL Projections.R", sep=""), echo=TRUE)
+source(paste(getwd(),"/R Scripts/Projections/FantasyPros Projections.R", sep=""), echo=TRUE)
 #source(paste(getwd(),"/R Scripts/Projections/Accuscore Projections.R", sep=""), echo=TRUE) #Paywalled
 #source(paste(getwd(),"/R Scripts/Projections/FantasyFootballNerd Projections.R", sep=""), echo=TRUE) #Paywalled
 #source(paste(getwd(),"/R Scripts/Projections/Footballguys1 Projections.R", sep=""), echo=TRUE)#Paywalled
@@ -29,30 +36,13 @@ source(paste(getwd(),"/R Scripts/Functions/League Settings_", league, ".R", sep=
 #source(paste(getwd(),"/R Scripts/Projections/WalterFootball Projections.R", sep=""), echo=TRUE) # later, he doesn't use anyway
 #source(paste(getwd(),"/R Scripts/Projections/FantasySharks Projections.R", sep=""), echo=TRUE)
 #source(paste(getwd(),"/R Scripts/Projections/FFtoday Projections.R", sep=""), echo=TRUE)
-source(paste(getwd(),"/R Scripts/Projections/CBS Projections.R", sep=""), echo=TRUE)
-source(paste(getwd(),"/R Scripts/Projections/ESPN Projections.R", sep=""), echo=TRUE)
-source(paste(getwd(),"/R Scripts/Projections/Yahoo Projections.R", sep=""), echo=TRUE)
-source(paste(getwd(),"/R Scripts/Projections/FOX Projections.R", sep=""), echo=TRUE)
-source(paste(getwd(),"/R Scripts/Projections/NFL Projections.R", sep=""), echo=TRUE)
-source(paste(getwd(),"/R Scripts/Projections/FantasyPros Projections.R", sep=""), echo=TRUE)
 
 ###############
 # Calculations
 ###############
 
 source(paste(getwd(),"/R Scripts/Calculations/Calculate League Projections.R", sep=""), echo=TRUE)
-#source(paste(getwd(),"/R Scripts/Calculations/Wisdom of the Crowd.R", sep=""), echo=TRUE) # Takes hours to run
+source(paste(getwd(),"/R Scripts/Calculations/Wisdom of the Crowd.R", sep=""), echo=TRUE)
 source(paste(getwd(),"/R Scripts/Calculations/Risk.R", sep=""), echo=TRUE)
 source(paste(getwd(),"/R Scripts/Calculations/Value Over Replacement.R", sep=""), echo=TRUE)
-
-###############
-# Draft Day
-###############
-
-#source(paste(getwd(),"/R Scripts/Draft Day/Draft Day.R", sep=""), echo=TRUE)
-
-###############
-# Other
-###############
-
-#source(paste(getwd(),"/R Scripts/Posts/Evaluate Projections.R", sep=""), echo=TRUE)
+source(paste0(getwd(), "/R Scripts/Calculations/Tiers.R"), echo=TRUE)

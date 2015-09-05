@@ -1,9 +1,11 @@
 library(shiny)
 
+source("~/github/local/FantasyFootballAnalyticsR/R Scripts/Functions/Global Settings.R")
+
 # Define UI for application that recommends custom league draft candidates
 shinyUI(fluidPage(
   # Application title
-  titlePanel("Draft Recommendation System"),
+  titlePanel(paste0("Draft Recommendation System - ", league, " - ", season)),
   # Sidebar with a slider input for the number of bins
   sidebarLayout(
     sidebarPanel(
